@@ -106,32 +106,39 @@ function render() {
 function deleteLive(id) {
   if (!confirm("この履歴を削除しますか？")) return;
 
-  const tx = db.transaction("lives", "readwrite");
-  const store = tx.objectStore("lives");
-
   const keepItems = [];
 
-  store.openCursor().onsuccess = (event) => {
-    const cursor = event.target.result;
+  // ① 読み取り専用トランザクション
+  const readTx = db.transaction("lives", "readonly");
+  const readStore = readTx.objectStore("lives");
 
+  readStore.openCursor().onsuccess = (event) => {
+    const cursor = event.target.result;
     if (cursor) {
       if (cursor.primaryKey !== Number(id)) {
         keepItems.push(cursor.value);
       }
       cursor.continue();
-    } else {
-      // 一旦全消去（iOSでも確実）
-      store.clear().onsuccess = () => {
-        // 残したデータを入れ直す
-        keepItems.forEach(item => store.add(item));
-      };
     }
   };
 
-  tx.oncomplete = () => {
-    render();
+  // ② 読み取り完了後に書き込み
+  readTx.oncomplete = () => {
+    const writeTx = db.transaction("lives", "readwrite");
+    const writeStore = writeTx.objectStore("lives");
+
+    writeStore.clear().onsuccess = () => {
+      keepItems.forEach(item => writeStore.add(item));
+    };
+
+    writeTx.oncomplete = () => {
+      render();
+    };
   };
 }
+
+
+  
 
 
   function testClear() {
@@ -159,6 +166,7 @@ function deleteLive(id) {
 
 </body>
 </html>
+
 
 
 
