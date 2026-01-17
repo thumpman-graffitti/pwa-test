@@ -1,7 +1,7 @@
 {
   "name": "PG Live Log",
   "short_name": "PG Log",
-  "start_url": "index.html",
+  "start_url": "/pwa-test/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
@@ -12,4 +12,5 @@
       "type": "image/png"
     }
   ]
+
 }
