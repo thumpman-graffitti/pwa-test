@@ -26,16 +26,29 @@
 <ul id="list"></ul>
 
 <script>
-  const STORAGE_KEY = "pg_live_log";
+  let db;
 
-  function loadLives() {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
-  }
+  // DBを開く
+  const request = indexedDB.open("pgLiveDB", 1);
 
-  function saveLives(lives) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(lives));
-  }
+  request.onupgradeneeded = (event) => {
+    db = event.target.result;
+    if (!db.objectStoreNames.contains("lives")) {
+      db.createObjectStore("lives", {
+        keyPath: "id",
+        autoIncrement: true
+      });
+    }
+  };
+
+  request.onsuccess = (event) => {
+    db = event.target.result;
+    render();
+  };
+
+  request.onerror = () => {
+    alert("DBの初期化に失敗しました");
+  };
 
   function saveLive() {
     const date = document.getElementById("date").value;
@@ -46,69 +59,39 @@
       return;
     }
 
-    const lives = loadLives();
-    lives.push({ date, venue });
-    saveLives(lives);
+    const tx = db.transaction("lives", "readwrite");
+    const store = tx.objectStore("lives");
 
-    document.getElementById("date").value = "";
-    document.getElementById("venue").value = "";
+    store.add({ date, venue });
 
-    render();
+    tx.oncomplete = () => {
+      document.getElementById("date").value = "";
+      document.getElementById("venue").value = "";
+      render();
+    };
   }
 
   function render() {
     const list = document.getElementById("list");
     list.innerHTML = "";
 
-    const lives = loadLives();
-    lives.forEach(live => {
-      const li = document.createElement("li");
-      li.textContent = `${live.date} / ${live.venue}`;
-      list.appendChild(li);
-    });
-  }
-function exportData() {
-    const data = localStorage.getItem(STORAGE_KEY);
-    if (!data) {
-      alert("バックアップするデータがありません");
-      return;
-    }
+    const tx = db.transaction("lives", "readonly");
+    const store = tx.objectStore("lives");
 
-    const blob = new Blob([data], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "pg_live_log_backup.json";
-    a.click();
-
-    URL.revokeObjectURL(url);
-  }
-
-  function importData() {
-    const fileInput = document.getElementById("importFile");
-    const file = fileInput.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        JSON.parse(reader.result); // 構文チェック
-        localStorage.setItem(STORAGE_KEY, reader.result);
-        render();
-        alert("復元しました");
-      } catch {
-        alert("不正なJSONファイルです");
+    store.openCursor().onsuccess = (event) => {
+      const cursor = event.target.result;
+      if (cursor) {
+        const li = document.createElement("li");
+        li.textContent = `${cursor.value.date} / ${cursor.value.venue}`;
+        list.appendChild(li);
+        cursor.continue();
       }
     };
-    reader.readAsText(file);
-
-    fileInput.value = "";
   }
-  render();
 </script>
 
 </body>
 </html>
+
 
 
