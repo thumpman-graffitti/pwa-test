@@ -18,7 +18,10 @@
 <input id="date" type="date" />
 <input id="venue" type="text" placeholder="会場名" />
 <button onclick="saveLive()">保存</button>
+<button onclick="exportData()">📤 バックアップ</button>
+<input type="file" id="importFile" accept=".json" onchange="importData()" />
 
+  
 <h2>履歴</h2>
 <ul id="list"></ul>
 
@@ -64,10 +67,48 @@
       list.appendChild(li);
     });
   }
+function exportData() {
+    const data = localStorage.getItem(STORAGE_KEY);
+    if (!data) {
+      alert("バックアップするデータがありません");
+      return;
+    }
 
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "pg_live_log_backup.json";
+    a.click();
+
+    URL.revokeObjectURL(url);
+  }
+
+  function importData() {
+    const fileInput = document.getElementById("importFile");
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        JSON.parse(reader.result); // 構文チェック
+        localStorage.setItem(STORAGE_KEY, reader.result);
+        render();
+        alert("復元しました");
+      } catch {
+        alert("不正なJSONファイルです");
+      }
+    };
+    reader.readAsText(file);
+
+    fileInput.value = "";
+  }
   render();
 </script>
 
 </body>
 </html>
+
 
