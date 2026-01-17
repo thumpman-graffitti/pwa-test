@@ -13,7 +13,7 @@
 </head>
 <body>
 
-<h1>🎵 PG ライブ履歴７１</h1>
+<h1>🎵 PG ライブ履歴７２</h1>
 
 <input id="date" type="date" />
 <input id="venue" type="text" placeholder="会場名" />
@@ -92,8 +92,11 @@ function render() {
         const delBtn = document.createElement("button");
         delBtn.textContent = "削除";
         delBtn.style.marginLeft = "8px";
-        delBtn.onclick = () => deleteLive(cursor.primaryKey);
-
+        
+delBtn.onclick = () => {
+  alert("削除ボタンが押されました");
+  deleteLive(cursor.primaryKey);
+};
 
         li.appendChild(text);
         li.appendChild(delBtn);
@@ -161,6 +164,7 @@ function deleteLive(id) {
 
 </body>
 </html>
+
 
 
 
