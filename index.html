@@ -1,30 +1,87 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PG Live Log</title>
-
-  <!-- PWA設定 -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#000000">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      padding: 16px;
+    }
+    h1 {
+      font-size: 20px;
+    }
+    input, button {
+      width: 100%;
+      padding: 8px;
+      margin: 6px 0;
+      font-size: 16px;
+    }
+    ul {
+      padding-left: 16px;
+    }
+    li {
+      margin-bottom: 6px;
+    }
+  </style>
 </head>
 <body>
-  <h1>PG Live Log</h1>
-  <p>これはPWAの最小サンプルです。</p>
 
-  <button id="btn">タップ確認</button>
+<h1>🎵 PG ライブ履歴</h1>
 
-  <script>
-    document.getElementById("btn").onclick = () => {
-      alert("アプリとして動いています！");
-    };
+<input id="date" type="date" />
+<input id="venue" type="text" placeholder="会場名" />
+<button onclick="saveLive()">保存</button>
 
-    // Service Worker 登録
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
+<h2>履歴</h2>
+<ul id="list"></ul>
+
+<script>
+  const STORAGE_KEY = "pg_live_log";
+
+  function loadLives() {
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+  }
+
+  function saveLives(lives) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(lives));
+  }
+
+  function saveLive() {
+    const date = document.getElementById("date").value;
+    const venue = document.getElementById("venue").value;
+
+    if (!date || !venue) {
+      alert("日付と会場を入力してください");
+      return;
     }
-  </script>
+
+    const lives = loadLives();
+    lives.push({ date, venue });
+    saveLives(lives);
+
+    document.getElementById("date").value = "";
+    document.getElementById("venue").value = "";
+
+    render();
+  }
+
+  function render() {
+    const list = document.getElementById("list");
+    list.innerHTML = "";
+
+    const lives = loadLives();
+    lives.forEach(live => {
+      const li = document.createElement("li");
+      li.textContent = `${live.date} / ${live.venue}`;
+      list.appendChild(li);
+    });
+  }
+
+  render();
+</script>
+
 </body>
 </html>
