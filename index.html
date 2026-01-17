@@ -13,7 +13,7 @@
 </head>
 <body>
 
-<h1>🎵 PG ライブ履歴７５</h1>
+<h1>🎵 PG ライブ履歴７６</h1>
 
 <input id="date" type="date" />
 <input id="venue" type="text" placeholder="会場名" />
@@ -139,36 +139,35 @@ function deleteLive(id) {
 
   // 1. エクスポート：DBの中身をJSONファイルとして保存
 function exportData() {
-  if (!db) return;
-
   const tx = db.transaction("lives", "readonly");
   const store = tx.objectStore("lives");
   const request = store.getAll();
 
   request.onsuccess = () => {
     const data = JSON.stringify(request.result, null, 2);
-    // 型を 'application/octet-stream' にすると強制保存されやすくなります
-    const blob = new Blob([data], { type: "application/octet-stream" });
+    
+    // 1. データをBlob形式（バイナリ形式）に変換
+    const blob = new Blob([data], { type: "application/json" });
+    
+    // 2. ダウンロード用のURLを作成
     const url = URL.createObjectURL(blob);
     
+    // 3. 一時的なリンクを作ってクリックさせる
     const a = document.createElement("a");
     a.href = url;
-    // シンプルなファイル名にする
-    a.download = "pg-log.json"; 
+    a.download = `pg_live_log_backup_${new Date().toISOString().slice(0,10)}.json`;
     
-    // iPhone/Safari対策：bodyに追加してからクリック
     document.body.appendChild(a);
     a.click();
     
-    // 少し待ってから削除
+    // 4. 後片付け
     setTimeout(() => {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     }, 100);
-    
-    alert("保存処理を実行しました。「ファイル」アプリを確認してください。");
   };
 }
+
 
   
 
@@ -237,6 +236,7 @@ function importData() {
 
 </body>
 </html>
+
 
 
 
