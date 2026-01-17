@@ -100,23 +100,26 @@ function render() {
     };
   }
 
-    function deleteLive(id) {
-    if (!confirm("この履歴を削除しますか？")) return;
+function deleteLive(id) {
+  if (!confirm("この履歴を削除しますか？")) return;
 
-    const tx = db.transaction("lives", "readwrite");
-    const store = tx.objectStore("lives");
+  const tx = db.transaction("lives", "readwrite");
+  const store = tx.objectStore("lives");
 
-    store.delete(id);
+  store.delete(Number(id)); // ★ ここが超重要
 
-    tx.oncomplete = () => {
-      render();
-    };
-  }
+  tx.oncomplete = () => {
+    render();
+  };
+}
+
+  
   
 </script>
 
 </body>
 </html>
+
 
 
 
