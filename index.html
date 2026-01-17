@@ -13,7 +13,7 @@
 </head>
 <body>
 
-<h1>🎵 PG ライブ履歴６</h1>
+<h1>🎵 PG ライブ履歴７</h1>
 
 <input id="date" type="date" />
 <input id="venue" type="text" placeholder="会場名" />
@@ -107,28 +107,20 @@ function render() {
 function deleteLive(id) {
   if (!confirm("この履歴を削除しますか？")) return;
 
-  const readTx = db.transaction("lives", "readonly");
-  const store = readTx.objectStore("lives");
+  const tx = db.transaction("lives", "readwrite");
+  const store = tx.objectStore("lives");
 
-  const getAllRequest = store.getAll();
+  const req = store.delete(Number(id));
 
-  getAllRequest.onsuccess = () => {
-    const items = getAllRequest.result.filter(
-      item => item.id !== Number(id)
-    );
+  req.onsuccess = () => {
+    render();
+  };
 
-    const writeTx = db.transaction("lives", "readwrite");
-    const writeStore = writeTx.objectStore("lives");
-
-    writeStore.clear().onsuccess = () => {
-      items.forEach(item => writeStore.add(item));
-    };
-
-    writeTx.oncomplete = () => {
-      render();
-    };
+  req.onerror = () => {
+    alert("削除に失敗しました");
   };
 }
+
 
 
 
@@ -158,6 +150,7 @@ function deleteLive(id) {
 
 </body>
 </html>
+
 
 
 
