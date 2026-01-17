@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>PG Live Log</title>
+
+  <!-- PWA設定 -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+</head>
+<body>
+  <h1>PG Live Log</h1>
+  <p>これはPWAの最小サンプルです。</p>
+
+  <button id="btn">タップ確認</button>
+
+  <script>
+    document.getElementById("btn").onclick = () => {
+      alert("アプリとして動いています！");
+    };
+
+    // Service Worker 登録
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>
