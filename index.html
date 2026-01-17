@@ -13,13 +13,15 @@
 </head>
 <body>
 
-<h1>🎵 PG ライブ履歴２</h1>
+<h1>🎵 PG ライブ履歴３</h1>
 
 <input id="date" type="date" />
 <input id="venue" type="text" placeholder="会場名" />
 <button onclick="saveLive()">保存</button>
 <button onclick="exportData()">📤 バックアップ</button>
 <input type="file" id="importFile" accept=".json" onchange="importData()" />
+
+  <button onclick="testClear()">🧪 全削除テスト</button>
 
   
 <h2>履歴</h2>
@@ -114,11 +116,33 @@ function deleteLive(id) {
   };
 }
 
+
+  function testClear() {
+  if (!confirm("全データを削除しますか？")) return;
+
+  const tx = db.transaction("lives", "readwrite");
+  const store = tx.objectStore("lives");
+
+  store.clear();
+
+  tx.oncomplete = () => {
+    alert("clear() 完了");
+    render();
+  };
+
+  tx.onerror = () => {
+    alert("clear() 失敗");
+  };
+}
+
+
+  
   
 </script>
 
 </body>
 </html>
+
 
 
 
