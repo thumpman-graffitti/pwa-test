@@ -89,7 +89,8 @@ function render() {
         const delBtn = document.createElement("button");
         delBtn.textContent = "削除";
         delBtn.style.marginLeft = "8px";
-        delBtn.onclick = () => deleteLive(cursor.key);
+        delBtn.onclick = () => deleteLive(cursor.primaryKey);
+
 
         li.appendChild(text);
         li.appendChild(delBtn);
@@ -106,7 +107,7 @@ function deleteLive(id) {
   const tx = db.transaction("lives", "readwrite");
   const store = tx.objectStore("lives");
 
-  store.delete(Number(id)); // ★ ここが超重要
+  store.delete(Number(id));
 
   tx.oncomplete = () => {
     render();
@@ -114,11 +115,11 @@ function deleteLive(id) {
 }
 
   
-  
 </script>
 
 </body>
 </html>
+
 
 
 
