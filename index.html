@@ -35,6 +35,7 @@
 
   request.onupgradeneeded = (event) => {
     db = event.target.result;
+    console.log("DB opened:", db); // ← ここを追加
     if (!db.objectStoreNames.contains("lives")) {
       db.createObjectStore("lives", {
         keyPath: "id",
@@ -105,6 +106,16 @@ function render() {
 
 
 function deleteLive(id) {
+
+    console.log("deleteLive called, db =", db); // ← 先頭に追加
+
+  if (!db) {
+    alert("DBが未初期化です");
+    return;
+  }
+  
+  
+  
   if (!confirm("この履歴を削除しますか？")) return;
 
   const tx = db.transaction("lives", "readwrite");
@@ -150,6 +161,7 @@ function deleteLive(id) {
 
 </body>
 </html>
+
 
 
 
