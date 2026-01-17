@@ -71,7 +71,7 @@
     };
   }
 
-  function render() {
+function render() {
     const list = document.getElementById("list");
     list.innerHTML = "";
 
@@ -82,16 +82,42 @@
       const cursor = event.target.result;
       if (cursor) {
         const li = document.createElement("li");
-        li.textContent = `${cursor.value.date} / ${cursor.value.venue}`;
+
+        const text = document.createElement("span");
+        text.textContent = `${cursor.value.date} / ${cursor.value.venue}`;
+
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "削除";
+        delBtn.style.marginLeft = "8px";
+        delBtn.onclick = () => deleteLive(cursor.key);
+
+        li.appendChild(text);
+        li.appendChild(delBtn);
         list.appendChild(li);
+
         cursor.continue();
       }
     };
   }
+
+    function deleteLive(id) {
+    if (!confirm("この履歴を削除しますか？")) return;
+
+    const tx = db.transaction("lives", "readwrite");
+    const store = tx.objectStore("lives");
+
+    store.delete(id);
+
+    tx.oncomplete = () => {
+      render();
+    };
+  }
+  
 </script>
 
 </body>
 </html>
+
 
 
 
