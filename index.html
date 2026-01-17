@@ -13,7 +13,7 @@
 </head>
 <body>
 
-<h1>🎵 PG ライブ履歴７３</h1>
+<h1>🎵 PG ライブ履歴７４</h1>
 
 <input id="date" type="date" />
 <input id="venue" type="text" placeholder="会場名" />
@@ -137,7 +137,65 @@ function deleteLive(id) {
   };
 }
 
+// 1. エクスポート：DBの中身をJSONファイルとして保存
+function exportData() {
+  if (!db) return;
 
+  const tx = db.transaction("lives", "readonly");
+  const store = tx.objectStore("lives");
+  const request = store.getAll(); // 全データを取得
+
+  request.onsuccess = () => {
+    const data = JSON.stringify(request.result, null, 2);
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    
+    // ダウンロード用のリンクを一時的に作ってクリックさせる
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `pg_live_log_backup.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+}
+
+// 2. リストア（インポート）：JSONファイルを読み込んでDBに入れる
+function importData() {
+  const fileInput = document.getElementById("importFile");
+  const file = fileInput.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const json = JSON.parse(e.target.result);
+      if (!Array.isArray(json)) {
+        alert("ファイル形式が正しくありません（配列データではありません）");
+        return;
+      }
+
+      const tx = db.transaction("lives", "readwrite");
+      const store = tx.objectStore("lives");
+
+      json.forEach(item => {
+        // IDが重複するとエラーになるため、
+        // 既存のIDを削除して、新しい番号として追加し直します
+        delete item.id; 
+        store.add(item);
+      });
+
+      tx.oncomplete = () => {
+        alert("復元が完了しました！");
+        render(); // リストを再描画
+        fileInput.value = ""; // 選択したファイルをリセット
+      };
+    } catch (err) {
+      alert("読み込みに失敗しました。正しいJSONファイルか確認してください。");
+      console.error(err);
+    }
+  };
+  reader.readAsText(file);
+}
 
 
 
@@ -166,6 +224,7 @@ function deleteLive(id) {
 
 </body>
 </html>
+
 
 
 
