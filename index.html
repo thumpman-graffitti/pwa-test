@@ -13,7 +13,7 @@
 </head>
 <body>
 
-<h1>🎵 PG ライブ履歴７７</h1>
+<h1>🎵 PG ライブ履歴７８</h1>
 
 <input id="date" type="date" />
 <input id="venue" type="text" placeholder="会場名" />
@@ -23,6 +23,15 @@
 
   <button onclick="testClear()">🧪 全削除テスト</button>
 
+<select id="masterSelect">
+  <option value="">ライブを選択してください</option>
+</select>
+
+<input id="memo" type="text" placeholder="座席・メモ（例：アリーナA5）" />
+
+<button onclick="saveLive()">保存</button>
+
+  
   
 <h2>履歴</h2>
 <ul id="list"></ul>
@@ -53,6 +62,57 @@
     alert("DBの初期化に失敗しました");
   };
 
+// ページ読み込み時にマスターデータを取得
+window.addEventListener('load', () => {
+  // GitHub PagesのURLに合わせて変更してください
+  const masterUrl = "https://thumpman-graffitti.github.io/YOUR_REPO_NAME/live_master.json";
+
+  fetch(masterUrl)
+    .then(response => response.json())
+    .then(data => {
+      const select = document.getElementById("masterSelect");
+      data.forEach(live => {
+        const option = document.createElement("option");
+        // JSONの中身を紐付け（複数の情報を保持させるためにJSON文字列にして持たせる）
+        option.value = JSON.stringify(live);
+        option.textContent = `${live.date} - ${live.tour}`;
+        select.appendChild(option);
+      });
+    })
+    .catch(err => console.error("マスターデータの読み込み失敗:", err));
+});
+
+// 保存処理も少し変更
+function saveLive() {
+  const selectedValue = document.getElementById("masterSelect").value;
+  const memo = document.getElementById("memo").value;
+
+  if (!selectedValue) {
+    alert("ライブを選択してください");
+    return;
+  }
+
+  const liveData = JSON.parse(selectedValue);
+  
+  const tx = db.transaction("lives", "readwrite");
+  const store = tx.objectStore("lives");
+
+  // マスターデータ ＋ 自分のメモ を保存
+  store.add({ 
+    date: liveData.date, 
+    venue: liveData.venue,
+    tour: liveData.tour, // ツアー名も保存
+    memo: memo 
+  });
+
+  tx.oncomplete = () => {
+    document.getElementById("memo").value = "";
+    render();
+  };
+}
+  
+
+  
   function saveLive() {
     const date = document.getElementById("date").value;
     const venue = document.getElementById("venue").value;
@@ -239,6 +299,7 @@ function importData() {
 
 </body>
 </html>
+
 
 
 
