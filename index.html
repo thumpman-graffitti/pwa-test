@@ -17,7 +17,7 @@
 </head>
 <body>
 
-<h1>🎵 PG ライブ履歴５</h1>
+<h1>🎵 PG ライブ履歴６</h1>
 
 <label>ライブを選択：</label>
 <select id="masterSelect">
@@ -202,11 +202,9 @@ function showGlobalStats() {
     fetch(songsUrl).then(res => res.json())
   ]).then(([lives, songs]) => {
     
-    // 集計用オブジェクトを拡張
-    // { "001": { count: 5, lastDate: "2024-09-08", lastLive: "解放区" } }
     let songStats = {}; 
 
-    // 1. 全ライブデータを日付順にソート（古い順に処理して最新で上書きするため）
+    // 1. 全ライブデータを日付順にソート
     lives.sort((a, b) => new Date(a.date) - new Date(b.date));
 
     // 2. 全ライブのセトリをスキャン
@@ -217,7 +215,6 @@ function showGlobalStats() {
             songStats[songId] = { count: 0, lastDate: "", lastLive: "" };
           }
           songStats[songId].count += 1;
-          // 古い順にループしているので、常に後の日付（最新）の情報で更新される
           songStats[songId].lastDate = live.date;
           songStats[songId].lastLive = live.tour;
         });
@@ -239,30 +236,24 @@ function showGlobalStats() {
     // 4. 演奏回数順に並び替え
     stats.sort((a, b) => b.count - a.count);
 
-    // 5. テーブル描画（列を増やしました）
-    let html = "<table style='width:100%; text-align:left; border-collapse:collapse; font-size: 0.9em;'>";
-    html += "<tr style='border-bottom:2px solid #ccc; background:#eee;'>";
-    html += "<th>順位</th><th>曲名</th><th>回数</th><th>直近演奏日</th><th>最新ライブ名</th></tr>";
-    
-// 5. 表示エリアの描画（2段レイアウト）
-    let html = "";
+    // 5. 表示エリアの描画（2段レイアウト）
+    let outputHtml = ""; // 変数名を重複しないように変更
     
     stats.forEach((s, index) => {
       if (s.count > 0) {
-        // 各曲を1つのブロック（カード）として作成
-        html += `
+        outputHtml += `
           <div style="border-bottom: 1px solid #ddd; padding: 10px 5px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-              <div style="font-weight: bold; font-size: 1.1em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+              <div style="font-weight: bold; font-size: 1.0em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                 <span style="color: #888; margin-right: 5px;">${index + 1}.</span>
                 ${s.type} ${s.title}
               </div>
-              <div style="background: #e60012; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.9em; flex-shrink: 0;">
+              <div style="background: #e60012; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; flex-shrink: 0; margin-left: 10px;">
                 ${s.count}回
               </div>
             </div>
             
-            <div style="font-size: 0.85em; color: #666; display: flex; flex-wrap: wrap; gap: 8px;">
+            <div style="font-size: 0.8em; color: #666; display: flex; flex-wrap: wrap; gap: 8px;">
               <span>📅 ${s.lastDate}</span>
               <span>🎤 ${s.lastLive}</span>
             </div>
@@ -271,24 +262,20 @@ function showGlobalStats() {
       }
     });
     
-    if (html === "") html = "演奏履歴が見つかりません。";
-    statsArea.innerHTML = html;
-    
-    html += "</table>";
-    
-    statsArea.innerHTML = html;
+    if (outputHtml === "") outputHtml = "演奏履歴が見つかりません。";
+    statsArea.innerHTML = outputHtml;
 
   }).catch(err => {
     console.error(err);
-    statsArea.innerHTML = "エラーが発生しました。";
+    statsArea.innerHTML = "エラーが発生しました。URLまたはJSONの形式を確認してください。";
   });
 }
-
 
 </script>
 
 </body>
 </html>
+
 
 
 
