@@ -36,12 +36,14 @@
 <hr>
 <h2>📊 全ライブ統計</h2>
 <button onclick="showGlobalStats()" style="background: #fff9c4;">全ライブの演奏回数ランキングを集計</button>
-<div id="statsArea" style="background: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 20px; max-height: 300px; overflow-y: auto;">
+
+<button onclick="showUnplayedSongs()" style="background: #e1f5fe; margin-top: 5px;">🚫 未演奏曲（レア曲）リストを表示</button>
+  
+  <div id="statsArea" style="background: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 20px; max-height: 300px; overflow-y: auto;">
   ここにランキングが表示されます
 </div>
 <hr>
 
-<button onclick="showUnplayedSongs()" style="background: #e1f5fe; margin-top: 5px;">🚫 未演奏曲（レア曲）リストを表示</button>
 
   
 <h2>参加履歴</h2>
@@ -330,6 +332,7 @@ function showUnplayedSongs() {
 
 </body>
 </html>
+
 
 
 
