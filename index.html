@@ -17,7 +17,7 @@
 </head>
 <body>
 
-<h1>🎵 PGDB</h1>
+<h1>🎵 PGDB２</h1>
 
 <label>ライブを選択：</label>
 <select id="masterSelect">
@@ -246,9 +246,12 @@ function showGlobalStats() {
     
 stats.forEach((s, index) => {
       if (s.count > 0) {
-        // idを文字列として確実に渡すように修正
+        // IDを確実に文字列として渡すために String() で囲み、引用符を徹底します
+        const currentId = String(s.id); 
+        const currentTitle = String(s.title).replace(/'/g, "\\'"); // タイトル内の引用符対策
+
         outputHtml += `
-          <div style="border-bottom: 1px solid #ddd; padding: 10px 5px; cursor: pointer;" onclick="showSongHistory('${s.id}', '${s.title}')">
+          <div style="border-bottom: 1px solid #ddd; padding: 10px 5px; cursor: pointer;" onclick="showSongHistory('${currentId}', '${currentTitle}')">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
               <div style="font-weight: bold; font-size: 1.0em; color: #007bff; text-decoration: underline;">
                 <span style="color: #888; text-decoration: none;">${index + 1}.</span>
@@ -328,6 +331,12 @@ function showUnplayedSongs() {
 
 // 特定の曲の演奏履歴を一覧表示する関数（比較ロジック強化版）
 function showSongHistory(songId, songTitle) {
+  // もしIDが届いていなければエラーを表示して中断
+  if (!songId || songId === "undefined") {
+    alert("エラー: 曲のIDを正しく取得できませんでした。");
+    return;
+  }
+
   const masterUrl = "https://thumpman-graffitti.github.io/pwa-test/live_master.json";
   const statsArea = document.getElementById("statsArea");
   statsArea.innerHTML = "検索中...";
@@ -335,17 +344,17 @@ function showSongHistory(songId, songTitle) {
   fetch(masterUrl)
     .then(res => res.json())
     .then(lives => {
-      // 検索するIDを「3桁の文字列」に強制変換 (例: 4 -> "004")
+      // 検索IDを3桁に正規化
       const targetId = String(songId).padStart(3, '0');
 
       const history = lives.filter(live => {
         if (!live.setlist) return false;
-        // ライブ側のIDもすべて「3桁の文字列」に変換してから比較
+        // ライブデータのIDも3桁にして比較
         return live.setlist.some(id => String(id).padStart(3, '0') === targetId);
       });
 
       let html = `<div style="margin-bottom: 15px; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
-                    <button onclick="showGlobalStats()" style="width: auto; padding: 5px 10px; background: #eee; margin-bottom:10px;">← ランキングに戻る</button>
+                    <button onclick="showGlobalStats()" style="width: auto; padding: 5px 10px; background: #eee; margin-bottom:10px; border:1px solid #ccc;">← ランキングに戻る</button>
                     <h3 style="margin: 0;">🎸 ${songTitle}</h3>
                     <p style="font-size: 0.9em; margin: 5px 0;">演奏回数: ${history.length} 回</p>
                   </div>`;
@@ -361,10 +370,14 @@ function showSongHistory(songId, songTitle) {
           `;
         });
       } else {
-        html += "<p style='color:red;'>履歴が見つかりません。ID形式（" + targetId + "）が一致していない可能性があります。</p>";
+        html += `<p style='color:red;'>履歴が見つかりませんでした。(ID: ${targetId})</p>`;
       }
       statsArea.innerHTML = html;
       statsArea.scrollTop = 0;
+    })
+    .catch(err => {
+      console.error(err);
+      statsArea.innerHTML = "データの取得に失敗しました。";
     });
 }
   
@@ -372,6 +385,7 @@ function showSongHistory(songId, songTitle) {
 
 </body>
 </html>
+
 
 
 
