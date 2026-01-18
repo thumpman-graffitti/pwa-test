@@ -17,7 +17,7 @@
 </head>
 <body>
 
-<h1>🎵 PG ライブ履歴９</h1>
+<h1>🎵 PG ライブ履歴</h1>
 
 <label>ライブを選択：</label>
 <select id="masterSelect">
@@ -246,9 +246,9 @@ function showGlobalStats() {
     
 stats.forEach((s, index) => {
       if (s.count > 0) {
-        // 全体をdivで囲み、onclickを追加。見た目をリンク風にするため color と cursor を指定
+        // divに onclick="showSongHistory(...)" を追加し、曲名を青色＆下線にしています
         outputHtml += `
-          <div style="border-bottom: 1px solid #ddd; padding: 10px 5px; cursor: pointer;" onclick="showSongHistory('${s.id}', '${s.title}')">
+          <div style="border-bottom: 1px solid #ddd; padding: 10px 5px; cursor: pointer;" onclick="showSongHistory('${String(s.id)}', '${s.title}')">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
               <div style="font-weight: bold; font-size: 1.0em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #007bff; text-decoration: underline;">
                 <span style="color: #888; margin-right: 5px; text-decoration: none; display: inline-block;">${index + 1}.</span>
@@ -338,43 +338,44 @@ function showSongHistory(songId, songTitle) {
   fetch(masterUrl)
     .then(res => res.json())
     .then(lives => {
-      // IDを文字列に変換して比較（型変換エラーを防止）
-      const searchId = String(songId).trim();
+      // 検索対象のIDを徹底的にクリーンアップ
+      const searchTarget = String(songId).trim();
 
-      // その曲が含まれるライブを抽出
+      // 一致するライブを抽出
       const history = lives.filter(live => {
         if (!live.setlist || !Array.isArray(live.setlist)) return false;
-        // セトリ内の各IDも文字列にして比較
-        return live.setlist.some(id => String(id).trim() === searchId);
+        // setlist内の各IDも徹底的にクリーンアップして比較
+        return live.setlist.some(id => String(id).trim() === searchTarget);
       });
       
-      // 日付の新しい順にソート
       history.sort((a, b) => new Date(b.date) - new Date(a.date));
 
       let html = `<div style="margin-bottom: 15px; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
                     <button onclick="showGlobalStats()" style="width: auto; padding: 5px 15px; font-size: 0.8em; background: #eee; border:1px solid #ccc; border-radius:4px;">← ランキングに戻る</button>
                     <h3 style="margin: 10px 0 5px 0;">🎸 「${songTitle}」の演奏履歴</h3>
-                    <p style="font-size: 0.85em; color: #666; font-weight:bold;">
-                      ${history.length > 0 ? `合計 ${history.length} 回演奏されています` : "演奏履歴が見つかりませんでした"}
-                    </p>
+                    <p style="font-size: 0.85em; color: #666; font-weight:bold;">演奏回数: ${history.length} 回</p>
                   </div>`;
 
-      history.forEach(live => {
-        html += `
-          <div style="border-bottom: 1px dotted #ccc; padding: 10px 5px; font-size: 0.9em;">
-            <div style="font-weight: bold; color: #333;">📅 ${live.date}</div>
-            <div style="margin: 2px 0;">🎤 ${live.tour}</div>
-            <div style="color: #666; font-size: 0.85em;">📍 ${live.venue} ${live.pref ? '(' + live.pref + ')' : ''}</div>
-          </div>
-        `;
-      });
+      if (history.length > 0) {
+        history.forEach(live => {
+          html += `
+            <div style="border-bottom: 1px dotted #ccc; padding: 10px 5px; font-size: 0.9em;">
+              <div style="font-weight: bold; color: #333;">📅 ${live.date}</div>
+              <div style="margin: 2px 0;">🎤 ${live.tour}</div>
+              <div style="color: #666; font-size: 0.85em;">📍 ${live.venue}</div>
+            </div>
+          `;
+        });
+      } else {
+        html += "<p style='color:red;'>履歴データとの紐付けに失敗しました。ライブデータのIDを確認してください。</p>";
+      }
 
       statsArea.innerHTML = html;
       statsArea.scrollTop = 0;
     })
     .catch(err => {
       console.error(err);
-      statsArea.innerHTML = "履歴の取得に失敗しました。";
+      statsArea.innerHTML = "データの読み込みに失敗しました。";
     });
 }
   
@@ -382,6 +383,7 @@ function showSongHistory(songId, songTitle) {
 
 </body>
 </html>
+
 
 
 
