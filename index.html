@@ -17,7 +17,7 @@
 </head>
 <body>
 
-<h1>🎵 PG ライブ履歴６</h1>
+<h1>🎵 PG ライブ履歴７</h1>
 
 <label>ライブを選択：</label>
 <select id="masterSelect">
@@ -40,6 +40,9 @@
   ここにランキングが表示されます
 </div>
 <hr>
+
+<button onclick="showUnplayedSongs()" style="background: #e1f5fe; margin-top: 5px;">🚫 未演奏曲（レア曲）リストを表示</button>
+
   
 <h2>参加履歴</h2>
 <ul id="list"></ul>
@@ -271,10 +274,63 @@ function showGlobalStats() {
   });
 }
 
+// 未演奏曲（カウントが0の曲）を表示する関数
+function showUnplayedSongs() {
+  const masterUrl = "https://thumpman-graffitti.github.io/pwa-test/live_master.json";
+  const songsUrl = "https://thumpman-graffitti.github.io/pwa-test/songs_master.json";
+
+  const statsArea = document.getElementById("statsArea");
+  statsArea.innerHTML = "抽出中...";
+
+  Promise.all([
+    fetch(masterUrl).then(res => res.json()),
+    fetch(songsUrl).then(res => res.json())
+  ]).then(([lives, songs]) => {
+    
+    let playedSongIds = new Set(); 
+
+    // 1. 演奏されたことがある曲のIDをすべてSetに入れる
+    lives.forEach(live => {
+      if (live.setlist && Array.isArray(live.setlist)) {
+        live.setlist.forEach(songId => playedSongIds.add(songId));
+      }
+    });
+
+    // 2. 楽曲マスタのうち、演奏済みセットに含まれない曲だけを抽出
+    let unplayedSongs = songs.filter(song => !playedSongIds.has(song.id));
+
+    // 3. 表示エリアの描画
+    let outputHtml = "<h3 style='margin-top:0;'>🚫 未演奏の楽曲一覧</h3>";
+    outputHtml += `<p style='font-size:0.8em; color:#666;'>全 ${songs.length} 曲中、${unplayedSongs.length} 曲が未演奏です。</p>`;
+    
+    unplayedSongs.forEach((s) => {
+      outputHtml += `
+        <div style="border-bottom: 1px solid #ddd; padding: 8px 5px;">
+          <div style="font-weight: bold;">
+            ${s.type === 's' ? '💿' : '🎸'} ${s.title}
+          </div>
+          <div style="font-size: 0.8em; color: #888;">
+            初出: ${s.source || '-'} / アルバム: ${s.album || '-'}
+          </div>
+        </div>
+      `;
+    });
+    
+    if (unplayedSongs.length === 0) outputHtml = "なんと、全曲演奏済みです！🎉";
+    statsArea.innerHTML = outputHtml;
+
+  }).catch(err => {
+    console.error(err);
+    statsArea.innerHTML = "エラーが発生しました。";
+  });
+}  
+
+  
 </script>
 
 </body>
 </html>
+
 
 
 
