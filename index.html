@@ -17,7 +17,7 @@
 </head>
 <body>
 
-<h1>🎵 PGDB２</h1>
+<h1>🎵 PGDB３</h1>
 
 <label>ライブを選択：</label>
 <select id="masterSelect">
@@ -207,53 +207,53 @@ function showGlobalStats() {
     fetch(songsUrl).then(res => res.json())
   ]).then(([lives, songs]) => {
     
-    let songStats = {}; 
+    // 1. 全ライブのセトリを集計
+    let songCounter = {}; 
+    let lastInfo = {}; // { "曲ID": { date: "日付", tour: "ツアー" } }
 
-    // 1. 全ライブデータを日付順にソート
+    // 日付順に並び替えてから集計（最新情報を保持するため）
     lives.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    // 2. 全ライブのセトリをスキャン
     lives.forEach(live => {
       if (live.setlist && Array.isArray(live.setlist)) {
-        live.setlist.forEach(songId => {
-          if (!songStats[songId]) {
-            songStats[songId] = { count: 0, lastDate: "", lastLive: "" };
-          }
-          songStats[songId].count += 1;
-          songStats[songId].lastDate = live.date;
-          songStats[songId].lastLive = live.tour;
+        live.setlist.forEach(sid => {
+          const idStr = String(sid).padStart(3, '0');
+          songCounter[idStr] = (songCounter[idStr] || 0) + 1;
+          lastInfo[idStr] = { date: live.date, tour: live.tour };
         });
       }
     });
 
-    // 3. 集計結果を曲情報と紐付け
+    // 2. 曲マスタをベースに表示用データを作成
     let stats = songs.map(song => {
-      const s = songStats[song.id] || { count: 0, lastDate: "-", lastLive: "-" };
+      // songs_master.json の ID プロパティ名をここで確実に補足する
+      const id = String(song.id || "").padStart(3, '0'); 
       return {
-        title: song.title,
-        count: s.count,
-        lastDate: s.lastDate,
-        lastLive: s.lastLive,
+        id: id,
+        title: song.title || "無題",
+        count: songCounter[id] || 0,
+        lastDate: lastInfo[id] ? lastInfo[id].date : "-",
+        lastLive: lastInfo[id] ? lastInfo[id].tour : "-",
         type: song.type === 's' ? '💿' : '🎸'
       };
     });
 
-    // 4. 演奏回数順に並び替え
+    // 3. 演奏回数順に並び替え
     stats.sort((a, b) => b.count - a.count);
 
-    // 5. 表示エリアの描画（2段レイアウト）
-    let outputHtml = ""; // 変数名を重複しないように変更
-    
-stats.forEach((s, index) => {
+    // 4. HTML描画
+    let outputHtml = "";
+    stats.forEach((s, index) => {
       if (s.count > 0) {
-        // IDを確実に文字列として渡すために String() で囲み、引用符を徹底します
-        const currentId = String(s.id); 
-        const currentTitle = String(s.title).replace(/'/g, "\\'"); // タイトル内の引用符対策
+        // IDとタイトルを安全に文字列化して関数に渡す
+        const safeId = s.id;
+        const safeTitle = s.title.replace(/'/g, "\\'");
 
         outputHtml += `
-          <div style="border-bottom: 1px solid #ddd; padding: 10px 5px; cursor: pointer;" onclick="showSongHistory('${currentId}', '${currentTitle}')">
+          <div style="border-bottom: 1px solid #ddd; padding: 10px 5px; cursor: pointer;" 
+               onclick="showSongHistory('${safeId}', '${safeTitle}')">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-              <div style="font-weight: bold; font-size: 1.0em; color: #007bff; text-decoration: underline;">
+              <div style="font-weight: bold; color: #007bff; text-decoration: underline;">
                 <span style="color: #888; text-decoration: none;">${index + 1}.</span>
                 ${s.type} ${s.title}
               </div>
@@ -262,19 +262,18 @@ stats.forEach((s, index) => {
               </div>
             </div>
             <div style="font-size: 0.8em; color: #666;">
-              <span>📅 ${s.lastDate}</span> / <span>🎤 ${s.lastLive}</span>
+              📅 ${s.lastDate} / 🎤 ${s.lastLive}
             </div>
           </div>
         `;
       }
     });
     
-    if (outputHtml === "") outputHtml = "演奏履歴が見つかりません。";
-    statsArea.innerHTML = outputHtml;
+    statsArea.innerHTML = outputHtml || "演奏履歴が見つかりません。";
 
   }).catch(err => {
     console.error(err);
-    statsArea.innerHTML = "エラーが発生しました。URLまたはJSONの形式を確認してください。";
+    statsArea.innerHTML = "エラーが発生しました。JSONファイルを確認してください。";
   });
 }
 
@@ -385,6 +384,7 @@ function showSongHistory(songId, songTitle) {
 
 </body>
 </html>
+
 
 
 
