@@ -17,7 +17,7 @@
 </head>
 <body>
 
-<h1>🎵 PG ライブ履歴７</h1>
+<h1>🎵 PG ライブ履歴８</h1>
 
 <label>ライブを選択：</label>
 <select id="masterSelect">
@@ -244,13 +244,14 @@ function showGlobalStats() {
     // 5. 表示エリアの描画（2段レイアウト）
     let outputHtml = ""; // 変数名を重複しないように変更
     
-    stats.forEach((s, index) => {
+stats.forEach((s, index) => {
       if (s.count > 0) {
+        // 全体をdivで囲み、onclickを追加。見た目をリンク風にするため color と cursor を指定
         outputHtml += `
-          <div style="border-bottom: 1px solid #ddd; padding: 10px 5px;">
+          <div style="border-bottom: 1px solid #ddd; padding: 10px 5px; cursor: pointer;" onclick="showSongHistory('${s.id}', '${s.title}')">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-              <div style="font-weight: bold; font-size: 1.0em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                <span style="color: #888; margin-right: 5px;">${index + 1}.</span>
+              <div style="font-weight: bold; font-size: 1.0em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #007bff; text-decoration: underline;">
+                <span style="color: #888; margin-right: 5px; text-decoration: none; display: inline-block;">${index + 1}.</span>
                 ${s.type} ${s.title}
               </div>
               <div style="background: #e60012; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; flex-shrink: 0; margin-left: 10px;">
@@ -327,11 +328,53 @@ function showUnplayedSongs() {
   });
 }  
 
+// 特定の曲の演奏履歴を一覧表示する関数
+function showSongHistory(songId, songTitle) {
+  const masterUrl = "https://thumpman-graffitti.github.io/pwa-test/live_master.json";
+  const statsArea = document.getElementById("statsArea");
+
+  statsArea.innerHTML = `「${songTitle}」の履歴を検索中...`;
+
+  fetch(masterUrl)
+    .then(res => res.json())
+    .then(lives => {
+      // その曲が含まれるライブだけを抽出
+      const history = lives.filter(live => live.setlist && live.setlist.includes(songId));
+      
+      // 日付の新しい順に並び替え
+      history.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      let html = `<div style="margin-bottom: 15px; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
+                    <button onclick="showGlobalStats()" style="width: auto; padding: 5px 15px; font-size: 0.8em; background: #eee;">← ランキングに戻る</button>
+                    <h3 style="margin: 10px 0 5px 0;">🎸 「${songTitle}」の演奏履歴</h3>
+                    <p style="font-size: 0.8em; color: #666;">全 ${history.length} 回演奏されています</p>
+                  </div>`;
+
+      history.forEach(live => {
+        html += `
+          <div style="border-bottom: 1px dotted #ccc; padding: 8px 5px; font-size: 0.9em;">
+            <div style="font-weight: bold;">📅 ${live.date}</div>
+            <div>🎤 ${live.tour}</div>
+            <div style="color: #666; font-size: 0.85em;">📍 ${live.venue}</div>
+          </div>
+        `;
+      });
+
+      if (history.length === 0) html += "<p>演奏履歴が見つかりませんでした。</p>";
+      statsArea.innerHTML = html;
+      statsArea.scrollTop = 0; // 表示エリアを一番上に戻す
+    })
+    .catch(err => {
+      console.error(err);
+      statsArea.innerHTML = "履歴の取得に失敗しました。";
+    });
+}  
   
 </script>
 
 </body>
 </html>
+
 
 
 
