@@ -17,7 +17,7 @@
 </head>
 <body>
 
-<h1>🎵 PG ライブ履歴</h1>
+<h1>🎵 PGDB</h1>
 
 <label>ライブを選択：</label>
 <select id="masterSelect">
@@ -246,22 +246,20 @@ function showGlobalStats() {
     
 stats.forEach((s, index) => {
       if (s.count > 0) {
-        // divに onclick="showSongHistory(...)" を追加し、曲名を青色＆下線にしています
+        // idを文字列として確実に渡すように修正
         outputHtml += `
-          <div style="border-bottom: 1px solid #ddd; padding: 10px 5px; cursor: pointer;" onclick="showSongHistory('${String(s.id)}', '${s.title}')">
+          <div style="border-bottom: 1px solid #ddd; padding: 10px 5px; cursor: pointer;" onclick="showSongHistory('${s.id}', '${s.title}')">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-              <div style="font-weight: bold; font-size: 1.0em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #007bff; text-decoration: underline;">
-                <span style="color: #888; margin-right: 5px; text-decoration: none; display: inline-block;">${index + 1}.</span>
+              <div style="font-weight: bold; font-size: 1.0em; color: #007bff; text-decoration: underline;">
+                <span style="color: #888; text-decoration: none;">${index + 1}.</span>
                 ${s.type} ${s.title}
               </div>
-              <div style="background: #e60012; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; flex-shrink: 0; margin-left: 10px;">
+              <div style="background: #e60012; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em;">
                 ${s.count}回
               </div>
             </div>
-            
-            <div style="font-size: 0.8em; color: #666; display: flex; flex-wrap: wrap; gap: 8px;">
-              <span>📅 ${s.lastDate}</span>
-              <span>🎤 ${s.lastLive}</span>
+            <div style="font-size: 0.8em; color: #666;">
+              <span>📅 ${s.lastDate}</span> / <span>🎤 ${s.lastLive}</span>
             </div>
           </div>
         `;
@@ -332,50 +330,41 @@ function showUnplayedSongs() {
 function showSongHistory(songId, songTitle) {
   const masterUrl = "https://thumpman-graffitti.github.io/pwa-test/live_master.json";
   const statsArea = document.getElementById("statsArea");
-
-  statsArea.innerHTML = `「${songTitle}」の履歴を検索中...`;
+  statsArea.innerHTML = "検索中...";
 
   fetch(masterUrl)
     .then(res => res.json())
     .then(lives => {
-      // 検索対象のIDを徹底的にクリーンアップ
-      const searchTarget = String(songId).trim();
+      // 検索するIDを「3桁の文字列」に強制変換 (例: 4 -> "004")
+      const targetId = String(songId).padStart(3, '0');
 
-      // 一致するライブを抽出
       const history = lives.filter(live => {
-        if (!live.setlist || !Array.isArray(live.setlist)) return false;
-        // setlist内の各IDも徹底的にクリーンアップして比較
-        return live.setlist.some(id => String(id).trim() === searchTarget);
+        if (!live.setlist) return false;
+        // ライブ側のIDもすべて「3桁の文字列」に変換してから比較
+        return live.setlist.some(id => String(id).padStart(3, '0') === targetId);
       });
-      
-      history.sort((a, b) => new Date(b.date) - new Date(a.date));
 
       let html = `<div style="margin-bottom: 15px; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
-                    <button onclick="showGlobalStats()" style="width: auto; padding: 5px 15px; font-size: 0.8em; background: #eee; border:1px solid #ccc; border-radius:4px;">← ランキングに戻る</button>
-                    <h3 style="margin: 10px 0 5px 0;">🎸 「${songTitle}」の演奏履歴</h3>
-                    <p style="font-size: 0.85em; color: #666; font-weight:bold;">演奏回数: ${history.length} 回</p>
+                    <button onclick="showGlobalStats()" style="width: auto; padding: 5px 10px; background: #eee; margin-bottom:10px;">← ランキングに戻る</button>
+                    <h3 style="margin: 0;">🎸 ${songTitle}</h3>
+                    <p style="font-size: 0.9em; margin: 5px 0;">演奏回数: ${history.length} 回</p>
                   </div>`;
 
       if (history.length > 0) {
         history.forEach(live => {
           html += `
-            <div style="border-bottom: 1px dotted #ccc; padding: 10px 5px; font-size: 0.9em;">
-              <div style="font-weight: bold; color: #333;">📅 ${live.date}</div>
-              <div style="margin: 2px 0;">🎤 ${live.tour}</div>
-              <div style="color: #666; font-size: 0.85em;">📍 ${live.venue}</div>
+            <div style="border-bottom: 1px dotted #ccc; padding: 8px 0;">
+              <div style="font-weight: bold;">📅 ${live.date}</div>
+              <div style="font-size: 0.9em;">🎤 ${live.tour}</div>
+              <div style="font-size: 0.8em; color: #666;">📍 ${live.venue}</div>
             </div>
           `;
         });
       } else {
-        html += "<p style='color:red;'>履歴データとの紐付けに失敗しました。ライブデータのIDを確認してください。</p>";
+        html += "<p style='color:red;'>履歴が見つかりません。ID形式（" + targetId + "）が一致していない可能性があります。</p>";
       }
-
       statsArea.innerHTML = html;
       statsArea.scrollTop = 0;
-    })
-    .catch(err => {
-      console.error(err);
-      statsArea.innerHTML = "データの読み込みに失敗しました。";
     });
 }
   
@@ -383,6 +372,7 @@ function showSongHistory(songId, songTitle) {
 
 </body>
 </html>
+
 
 
 
