@@ -17,7 +17,7 @@
 </head>
 <body>
 
-<h1>🎵 PG ライブ履歴３</h1>
+<h1>🎵 PG ライブ履歴４</h1>
 
 <label>ライブを選択：</label>
 <select id="masterSelect">
@@ -202,40 +202,56 @@ function showGlobalStats() {
     fetch(songsUrl).then(res => res.json())
   ]).then(([lives, songs]) => {
     
-    let songCounter = {}; 
+    // 集計用オブジェクトを拡張
+    // { "001": { count: 5, lastDate: "2024-09-08", lastLive: "解放区" } }
+    let songStats = {}; 
 
-    // 1. 全ライブのセトリをスキャンしてカウント
+    // 1. 全ライブデータを日付順にソート（古い順に処理して最新で上書きするため）
+    lives.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // 2. 全ライブのセトリをスキャン
     lives.forEach(live => {
       if (live.setlist && Array.isArray(live.setlist)) {
-        // 重複を除外したい場合（1ライブ1カウント）はここでSetを使うが、通常はそのまま回す
         live.setlist.forEach(songId => {
-          songCounter[songId] = (songCounter[songId] || 0) + 1;
+          if (!songStats[songId]) {
+            songStats[songId] = { count: 0, lastDate: "", lastLive: "" };
+          }
+          songStats[songId].count += 1;
+          // 古い順にループしているので、常に後の日付（最新）の情報で更新される
+          songStats[songId].lastDate = live.date;
+          songStats[songId].lastLive = live.tour;
         });
       }
     });
 
-    // 2. 集計結果を曲名と紐付け
+    // 3. 集計結果を曲情報と紐付け
     let stats = songs.map(song => {
+      const s = songStats[song.id] || { count: 0, lastDate: "-", lastLive: "-" };
       return {
         title: song.title,
-        count: songCounter[song.id] || 0,
+        count: s.count,
+        lastDate: s.lastDate,
+        lastLive: s.lastLive,
         type: song.type === 's' ? '💿' : '🎸'
       };
     });
 
-    // 3. 演奏回数順に並び替え
+    // 4. 演奏回数順に並び替え
     stats.sort((a, b) => b.count - a.count);
 
-    // 4. HTMLに描画
-    let html = "<table style='width:100%; text-align:left; border-collapse:collapse;'>";
-    html += "<tr style='border-bottom:2px solid #ccc;'><th>順位</th><th>曲名</th><th>回数</th></tr>";
+    // 5. テーブル描画（列を増やしました）
+    let html = "<table style='width:100%; text-align:left; border-collapse:collapse; font-size: 0.9em;'>";
+    html += "<tr style='border-bottom:2px solid #ccc; background:#eee;'>";
+    html += "<th>順位</th><th>曲名</th><th>回数</th><th>直近演奏日</th><th>最新ライブ名</th></tr>";
     
     stats.forEach((s, index) => {
-      if (s.count > 0) { // 演奏された曲のみ表示
+      if (s.count > 0) {
         html += `<tr style='border-bottom:1px solid #eee;'>
           <td>${index + 1}</td>
-          <td>${s.type} ${s.title}</td>
+          <td>${s.type} <strong>${s.title}</strong></td>
           <td>${s.count}回</td>
+          <td><small>${s.lastDate}</small></td>
+          <td><small>${s.lastLive}</small></td>
         </tr>`;
       }
     });
@@ -245,15 +261,15 @@ function showGlobalStats() {
 
   }).catch(err => {
     console.error(err);
-    statsArea.innerHTML = "エラーが発生しました。URLまたはJSONの形式を確認してください。";
+    statsArea.innerHTML = "エラーが発生しました。";
   });
 }
-
 
 
 </script>
 
 </body>
 </html>
+
 
 
