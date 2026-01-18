@@ -17,7 +17,7 @@
 </head>
 <body>
 
-<h1>🎵 PG ライブ履歴８</h1>
+<h1>🎵 PG ライブ履歴９</h1>
 
 <label>ライブを選択：</label>
 <select id="masterSelect">
@@ -328,7 +328,7 @@ function showUnplayedSongs() {
   });
 }  
 
-// 特定の曲の演奏履歴を一覧表示する関数
+// 特定の曲の演奏履歴を一覧表示する関数（比較ロジック強化版）
 function showSongHistory(songId, songTitle) {
   const masterUrl = "https://thumpman-graffitti.github.io/pwa-test/live_master.json";
   const statsArea = document.getElementById("statsArea");
@@ -338,42 +338,51 @@ function showSongHistory(songId, songTitle) {
   fetch(masterUrl)
     .then(res => res.json())
     .then(lives => {
-      // その曲が含まれるライブだけを抽出
-      const history = lives.filter(live => live.setlist && live.setlist.includes(songId));
+      // IDを文字列に変換して比較（型変換エラーを防止）
+      const searchId = String(songId).trim();
+
+      // その曲が含まれるライブを抽出
+      const history = lives.filter(live => {
+        if (!live.setlist || !Array.isArray(live.setlist)) return false;
+        // セトリ内の各IDも文字列にして比較
+        return live.setlist.some(id => String(id).trim() === searchId);
+      });
       
-      // 日付の新しい順に並び替え
+      // 日付の新しい順にソート
       history.sort((a, b) => new Date(b.date) - new Date(a.date));
 
       let html = `<div style="margin-bottom: 15px; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
-                    <button onclick="showGlobalStats()" style="width: auto; padding: 5px 15px; font-size: 0.8em; background: #eee;">← ランキングに戻る</button>
+                    <button onclick="showGlobalStats()" style="width: auto; padding: 5px 15px; font-size: 0.8em; background: #eee; border:1px solid #ccc; border-radius:4px;">← ランキングに戻る</button>
                     <h3 style="margin: 10px 0 5px 0;">🎸 「${songTitle}」の演奏履歴</h3>
-                    <p style="font-size: 0.8em; color: #666;">全 ${history.length} 回演奏されています</p>
+                    <p style="font-size: 0.85em; color: #666; font-weight:bold;">
+                      ${history.length > 0 ? `合計 ${history.length} 回演奏されています` : "演奏履歴が見つかりませんでした"}
+                    </p>
                   </div>`;
 
       history.forEach(live => {
         html += `
-          <div style="border-bottom: 1px dotted #ccc; padding: 8px 5px; font-size: 0.9em;">
-            <div style="font-weight: bold;">📅 ${live.date}</div>
-            <div>🎤 ${live.tour}</div>
-            <div style="color: #666; font-size: 0.85em;">📍 ${live.venue}</div>
+          <div style="border-bottom: 1px dotted #ccc; padding: 10px 5px; font-size: 0.9em;">
+            <div style="font-weight: bold; color: #333;">📅 ${live.date}</div>
+            <div style="margin: 2px 0;">🎤 ${live.tour}</div>
+            <div style="color: #666; font-size: 0.85em;">📍 ${live.venue} ${live.pref ? '(' + live.pref + ')' : ''}</div>
           </div>
         `;
       });
 
-      if (history.length === 0) html += "<p>演奏履歴が見つかりませんでした。</p>";
       statsArea.innerHTML = html;
-      statsArea.scrollTop = 0; // 表示エリアを一番上に戻す
+      statsArea.scrollTop = 0;
     })
     .catch(err => {
       console.error(err);
       statsArea.innerHTML = "履歴の取得に失敗しました。";
     });
-}  
+}
   
 </script>
 
 </body>
 </html>
+
 
 
 
