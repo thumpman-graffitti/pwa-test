@@ -17,7 +17,7 @@
 </head>
 <body>
 
-<h1>🎵 PG ライブ履歴４</h1>
+<h1>🎵 PG ライブ履歴５</h1>
 
 <label>ライブを選択：</label>
 <select id="masterSelect">
@@ -244,17 +244,36 @@ function showGlobalStats() {
     html += "<tr style='border-bottom:2px solid #ccc; background:#eee;'>";
     html += "<th>順位</th><th>曲名</th><th>回数</th><th>直近演奏日</th><th>最新ライブ名</th></tr>";
     
+// 5. 表示エリアの描画（2段レイアウト）
+    let html = "";
+    
     stats.forEach((s, index) => {
       if (s.count > 0) {
-        html += `<tr style='border-bottom:1px solid #eee;'>
-          <td>${index + 1}</td>
-          <td>${s.type} <strong>${s.title}</strong></td>
-          <td>${s.count}回</td>
-          <td><small>${s.lastDate}</small></td>
-          <td><small>${s.lastLive}</small></td>
-        </tr>`;
+        // 各曲を1つのブロック（カード）として作成
+        html += `
+          <div style="border-bottom: 1px solid #ddd; padding: 10px 5px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <div style="font-weight: bold; font-size: 1.1em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                <span style="color: #888; margin-right: 5px;">${index + 1}.</span>
+                ${s.type} ${s.title}
+              </div>
+              <div style="background: #e60012; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.9em; flex-shrink: 0;">
+                ${s.count}回
+              </div>
+            </div>
+            
+            <div style="font-size: 0.85em; color: #666; display: flex; flex-wrap: wrap; gap: 8px;">
+              <span>📅 ${s.lastDate}</span>
+              <span>🎤 ${s.lastLive}</span>
+            </div>
+          </div>
+        `;
       }
     });
+    
+    if (html === "") html = "演奏履歴が見つかりません。";
+    statsArea.innerHTML = html;
+    
     html += "</table>";
     
     statsArea.innerHTML = html;
@@ -270,6 +289,7 @@ function showGlobalStats() {
 
 </body>
 </html>
+
 
 
 
