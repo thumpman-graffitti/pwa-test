@@ -17,7 +17,7 @@
 </head>
 <body>
 
-<h1>🎵 PG ライブ履歴</h1>
+<h1>🎵 PG ライブ履歴２</h1>
 
 <label>ライブを選択：</label>
 <select id="masterSelect">
@@ -33,6 +33,14 @@
 <input type="file" id="importFile" accept=".json" onchange="importData()" />
 <button onclick="testClear()" style="color: red;">🧪 全削除テスト</button>
 
+<hr>
+<h2>📊 全ライブ統計</h2>
+<button onclick="showGlobalStats()" style="background: #fff9c4;">全ライブの演奏回数ランキングを集計</button>
+<div id="statsArea" style="background: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 20px; max-height: 300px; overflow-y: auto;">
+  ここにランキングが表示されます
+</div>
+<hr>
+  
 <h2>参加履歴</h2>
 <ul id="list"></ul>
 
@@ -180,7 +188,71 @@
     tx.objectStore("lives").clear();
     tx.oncomplete = () => render();
   }
+
+// 全ライブ統計（マスターデータのみを使用）を表示する関数
+function showGlobalStats() {
+  const masterUrl = "https://thumpman-graffitti.github.io/thumpman-graffitti/live_master.json";
+  const songsUrl = "https://thumpman-graffitti.github.io/thumpman-graffitti/songs_master.json";
+
+  const statsArea = document.getElementById("statsArea");
+  statsArea.innerHTML = "集計中...";
+
+  Promise.all([
+    fetch(masterUrl).then(res => res.json()),
+    fetch(songsUrl).then(res => res.json())
+  ]).then(([lives, songs]) => {
+    
+    let songCounter = {}; 
+
+    // 1. 全ライブのセトリをスキャンしてカウント
+    lives.forEach(live => {
+      if (live.setlist && Array.isArray(live.setlist)) {
+        // 重複を除外したい場合（1ライブ1カウント）はここでSetを使うが、通常はそのまま回す
+        live.setlist.forEach(songId => {
+          songCounter[songId] = (songCounter[songId] || 0) + 1;
+        });
+      }
+    });
+
+    // 2. 集計結果を曲名と紐付け
+    let stats = songs.map(song => {
+      return {
+        title: song.title,
+        count: songCounter[song.id] || 0,
+        type: song.type === 's' ? '💿' : '🎸'
+      };
+    });
+
+    // 3. 演奏回数順に並び替え
+    stats.sort((a, b) => b.count - a.count);
+
+    // 4. HTMLに描画
+    let html = "<table style='width:100%; text-align:left; border-collapse:collapse;'>";
+    html += "<tr style='border-bottom:2px solid #ccc;'><th>順位</th><th>曲名</th><th>回数</th></tr>";
+    
+    stats.forEach((s, index) => {
+      if (s.count > 0) { // 演奏された曲のみ表示
+        html += `<tr style='border-bottom:1px solid #eee;'>
+          <td>${index + 1}</td>
+          <td>${s.type} ${s.title}</td>
+          <td>${s.count}回</td>
+        </tr>`;
+      }
+    });
+    html += "</table>";
+    
+    statsArea.innerHTML = html;
+
+  }).catch(err => {
+    console.error(err);
+    statsArea.innerHTML = "エラーが発生しました。URLまたはJSONの形式を確認してください。";
+  });
+}
+
+
+
 </script>
 
 </body>
 </html>
+
