@@ -3,138 +3,108 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- iOS PWA 必須 -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="PG Live Log" />
-
   <title>PG Live Log</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+    input, select, button { display: block; width: 100%; margin-bottom: 10px; padding: 10px; box-sizing: border-box; }
+    button { cursor: pointer; background: #f0f0f0; border: 1px solid #ccc; }
+    .delete-btn { background: #ffcccc; border: 1px solid #ff0000; width: auto; display: inline; padding: 2px 8px; margin-left: 10px; }
+    li { margin-bottom: 10px; border-bottom: 1px dotted #ccc; padding-bottom: 5px; }
+  </style>
 </head>
 <body>
 
-<h1>🎵 PG ライブ履歴７９</h1>
+<h1>🎵 PG ライブ履歴</h1>
 
-<input id="date" type="date" />
-<input id="venue" type="text" placeholder="会場名" />
-<button onclick="saveLive()">保存</button>
-<button onclick="exportData()">📤 バックアップ</button>
-<input type="file" id="importFile" accept=".json" onchange="importData()" />
-
-  <button onclick="testClear()">🧪 全削除テスト</button>
-
+<label>ライブを選択：</label>
 <select id="masterSelect">
-  <option value="">ライブを選択してください</option>
+  <option value="">読み込み中...</option>
 </select>
 
 <input id="memo" type="text" placeholder="座席・メモ（例：アリーナA5）" />
+<button onclick="saveLive()" style="background: #e1f5fe;">✨ 参加登録</button>
 
-<button onclick="saveLive()">保存</button>
+<hr>
 
-  
-  
-<h2>履歴</h2>
+<button onclick="exportData()">📤 バックアップ（共有からファイル保存）</button>
+<input type="file" id="importFile" accept=".json" onchange="importData()" />
+<button onclick="testClear()" style="color: red;">🧪 全削除テスト</button>
+
+<h2>参加履歴</h2>
 <ul id="list"></ul>
 
 <script>
   let db;
 
-  // DBを開く
+  // DB初期化
   const request = indexedDB.open("pgLiveDB", 1);
-
   request.onupgradeneeded = (event) => {
     db = event.target.result;
-    console.log("DB opened:", db); // ← ここを追加
     if (!db.objectStoreNames.contains("lives")) {
-      db.createObjectStore("lives", {
-        keyPath: "id",
-        autoIncrement: true
-      });
+      db.createObjectStore("lives", { keyPath: "id", autoIncrement: true });
     }
   };
-
   request.onsuccess = (event) => {
     db = event.target.result;
     render();
+    loadMasterData(); // DB準備完了後にマスター読み込み
   };
 
-  request.onerror = () => {
-    alert("DBの初期化に失敗しました");
-  };
+  // 1. マスターデータを取得してプルダウンに入れる
+  function loadMasterData() {
+    // ★ここを自分のGitHub URLに書き換えてください！
+    const masterUrl = "https://thumpman-graffitti.github.io/pwa-test/live_master.json";
 
-// ページ読み込み時にマスターデータを取得
-window.addEventListener('load', () => {
-  // GitHub PagesのURLに合わせて変更してください
-  const masterUrl = "https://thumpman-graffitti.github.io/YOUR_REPO_NAME/live_master.json";
-
-  fetch(masterUrl)
-    .then(response => response.json())
-    .then(data => {
-      const select = document.getElementById("masterSelect");
-      data.forEach(live => {
-        const option = document.createElement("option");
-        // JSONの中身を紐付け（複数の情報を保持させるためにJSON文字列にして持たせる）
-        option.value = JSON.stringify(live);
-        option.textContent = `${live.date} - ${live.tour}`;
-        select.appendChild(option);
+    fetch(masterUrl)
+      .then(res => res.json())
+      .then(data => {
+        const select = document.getElementById("masterSelect");
+        select.innerHTML = '<option value="">ライブを選択してください</option>';
+        data.forEach(live => {
+          const option = document.createElement("option");
+          option.value = JSON.stringify(live);
+          option.textContent = `${live.date} - ${live.tour}`;
+          select.appendChild(option);
+        });
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById("masterSelect").innerHTML = '<option value="">データ取得失敗</option>';
       });
-    })
-    .catch(err => console.error("マスターデータの読み込み失敗:", err));
-});
-
-// 保存処理も少し変更
-function saveLive() {
-  const selectedValue = document.getElementById("masterSelect").value;
-  const memo = document.getElementById("memo").value;
-
-  if (!selectedValue) {
-    alert("ライブを選択してください");
-    return;
   }
 
-  const liveData = JSON.parse(selectedValue);
-  
-  const tx = db.transaction("lives", "readwrite");
-  const store = tx.objectStore("lives");
-
-  // マスターデータ ＋ 自分のメモ を保存
-  store.add({ 
-    date: liveData.date, 
-    venue: liveData.venue,
-    tour: liveData.tour, // ツアー名も保存
-    memo: memo 
-  });
-
-  tx.oncomplete = () => {
-    document.getElementById("memo").value = "";
-    render();
-  };
-}
-  
-
-  
+  // 2. 保存処理（1つに統合）
   function saveLive() {
-    const date = document.getElementById("date").value;
-    const venue = document.getElementById("venue").value;
+    const selectedValue = document.getElementById("masterSelect").value;
+    const memo = document.getElementById("memo").value;
 
-    if (!date || !venue) {
-      alert("日付と会場を入力してください");
+    if (!selectedValue) {
+      alert("ライブを選択してください");
       return;
     }
 
+    const liveData = JSON.parse(selectedValue);
     const tx = db.transaction("lives", "readwrite");
     const store = tx.objectStore("lives");
 
-    store.add({ date, venue });
+    store.add({ 
+      date: liveData.date, 
+      venue: liveData.venue,
+      tour: liveData.tour,
+      memo: memo 
+    });
 
     tx.oncomplete = () => {
-      document.getElementById("date").value = "";
-      document.getElementById("venue").value = "";
+      document.getElementById("memo").value = "";
       render();
     };
   }
 
-function render() {
+  // 3. 表示処理
+  function render() {
     const list = document.getElementById("list");
     list.innerHTML = "";
 
@@ -145,180 +115,72 @@ function render() {
       const cursor = event.target.result;
       if (cursor) {
         const li = document.createElement("li");
-
-        const text = document.createElement("span");
-        text.textContent = `${cursor.value.date} / ${cursor.value.venue}`;
+        const d = cursor.value;
+        
+        // 表示内容をリッチに
+        li.innerHTML = `
+          <strong>${d.date} ${d.tour}</strong><br>
+          <small>会場: ${d.venue} ${d.memo ? ' / メモ: ' + d.memo : ''}</small>
+        `;
 
         const delBtn = document.createElement("button");
         delBtn.textContent = "削除";
-        delBtn.style.marginLeft = "8px";
-        
+        delBtn.className = "delete-btn";
+        const currentId = cursor.primaryKey;
+        delBtn.onclick = () => deleteLive(currentId);
 
-        // cursor.primaryKey の値を一度変数に固定して保存する
-const currentId = cursor.primaryKey; 
-
-delBtn.onclick = () => {
-  deleteLive(currentId);
-};
-        li.appendChild(text);
         li.appendChild(delBtn);
         list.appendChild(li);
-
         cursor.continue();
       }
     };
   }
 
-
-function deleteLive(id) {
-
-    console.log("deleteLive called, db =", db); // ← 先頭に追加
-
-  if (!db) {
-    alert("DBが未初期化です");
-    return;
+  // 削除処理
+  function deleteLive(id) {
+    if (!confirm("この履歴を削除しますか？")) return;
+    const tx = db.transaction("lives", "readwrite");
+    tx.objectStore("lives").delete(id);
+    tx.oncomplete = () => render();
   }
-  
-  
-  
-  if (!confirm("この履歴を削除しますか？")) return;
 
-  const tx = db.transaction("lives", "readwrite");
-  const store = tx.objectStore("lives");
+  // エクスポート（BOM付きUTF-8）
+  function exportData() {
+    const tx = db.transaction("lives", "readonly");
+    tx.objectStore("lives").getAll().onsuccess = (e) => {
+      const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+      const blob = new Blob([bom, JSON.stringify(e.target.result, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "pg_live_log.json";
+      a.click();
+    };
+  }
 
-  const req = store.delete(Number(id));
-
-  req.onsuccess = () => {
-    render();
-  };
-
-  req.onerror = () => {
-    alert("削除に失敗しました");
-  };
-}
-
-  // 1. エクスポート：DBの中身をJSONファイルとして保存
-function exportData() {
-  const tx = db.transaction("lives", "readonly");
-  const store = tx.objectStore("lives");
-  const request = store.getAll();
-
-  request.onsuccess = () => {
-    // 1. データをJSON文字列にする
-    const jsonString = JSON.stringify(request.result, null, 2);
-    
-    // 2. 文字化け防止のためのBOMを追加し、UTF-8としてBlobを作成
-    const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
-    const blob = new Blob([bom, jsonString], { type: "application/json;charset=utf-8" });
-    
-    // 3. ダウンロード用のURL作成
-    const url = URL.createObjectURL(blob);
-    
-    // 4. 一時的なリンクを作成
-    const a = document.createElement("a");
-    a.href = url;
-    // ファイル名（iOSで認識されやすいようシンプルに）
-    a.download = "pg_live_log.json";
-    
-    // 5. iOS Safariで確実に動作させるための処理
-    document.body.appendChild(a);
-    a.click();
-    
-    // 6. 少し待ってから削除
-    setTimeout(() => {
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }, 500);
-  };
-}
-  
-   
-
-// 2. リストア（インポート）：JSONファイルを読み込んでDBに入れる
-function importData() {
-  const fileInput = document.getElementById("importFile");
-  const file = fileInput.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
+  // インポート
+  function importData() {
+    const file = document.getElementById("importFile").files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
       const json = JSON.parse(e.target.result);
-      if (!Array.isArray(json)) {
-        alert("ファイル形式が正しくありません（配列データではありません）");
-        return;
-      }
-
       const tx = db.transaction("lives", "readwrite");
       const store = tx.objectStore("lives");
+      json.forEach(item => { delete item.id; store.add(item); });
+      tx.oncomplete = () => { alert("復元完了"); render(); };
+    };
+    reader.readAsText(file);
+  }
 
-      json.forEach(item => {
-        // IDが重複するとエラーになるため、
-        // 既存のIDを削除して、新しい番号として追加し直します
-        delete item.id; 
-        store.add(item);
-      });
-
-      tx.oncomplete = () => {
-        alert("復元が完了しました！");
-        render(); // リストを再描画
-        fileInput.value = ""; // 選択したファイルをリセット
-      };
-    } catch (err) {
-      alert("読み込みに失敗しました。正しいJSONファイルか確認してください。");
-      console.error(err);
-    }
-  };
-  reader.readAsText(file);
-}
-
-
-
+  // 全削除
   function testClear() {
-  if (!confirm("全データを削除しますか？")) return;
-
-  const tx = db.transaction("lives", "readwrite");
-  const store = tx.objectStore("lives");
-
-  store.clear();
-
-  tx.oncomplete = () => {
-    alert("clear() 完了");
-    render();
-  };
-
-  tx.onerror = () => {
-    alert("clear() 失敗");
-  };
-}
-
-
-  
-  
+    if (!confirm("全データを削除しますか？")) return;
+    const tx = db.transaction("lives", "readwrite");
+    tx.objectStore("lives").clear();
+    tx.oncomplete = () => render();
+  }
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
