@@ -13,20 +13,21 @@
     button { cursor: pointer; background: #007bff; color: white; border: none; font-weight: bold; }
     button:hover { background: #0056b3; }
     .secondary-btn { background: #6c757d; }
-    .tertiary-btn { background: #28a745; } /* 未演奏用 */
+    .tertiary-btn { background: #28a745; }
     li { margin-bottom: 10px; border-bottom: 1px dotted #ccc; padding-bottom: 8px; list-style: none; }
     .stats-container { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 20px; }
     .live-card { border-left: 5px solid #007bff; background: #fff; padding: 10px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     .loading { text-align: center; color: #666; margin-top: 50px; }
     .encore { color: #dc3545; font-weight: bold; margin-left: 5px; }
-    .rank-num { font-weight: bold; color: #555; width: 30px; display: inline-block; }
-    .last-played { display: block; font-size: 0.8em; color: #666; margin-left: 35px; }
+    .rank-num { font-weight: bold; color: #555; width: 35px; display: inline-block; }
+    .last-played { display: block; font-size: 0.8em; color: #888; margin-left: 35px; }
     .song-title { color: #007bff; text-decoration: underline; cursor: pointer; font-weight: bold; }
+    .album-name { font-size: 0.8em; color: #666; margin-left: 5px; }
   </style>
 </head>
 <body>
 
-<h1>🎵 PG DB２</h1>
+<h1>🎵 PG DB３</h1>
 
 <div id="loader" class="loading">データを読み込み中...</div>
 
@@ -90,18 +91,16 @@
     filteredSet.forEach(item => {
       html += `<li>${item.order}. <strong>${item.song_title}</strong>${item.is_encore ? '<span class="encore">(Encore)</span>' : ''}</li>`;
     });
-    html += `</ul>`;
-    area.innerHTML = html;
+    area.innerHTML = html + `</ul>`;
   }
 
-  // 全演奏ランキング（順位・直近演奏付き）
+  // 全演奏ランキング（順位・最新演奏情報付き）
   function showGlobalStats() {
     const counts = {};
-    const lastLiveMap = {}; // 最新の演奏情報を保持
+    const lastLiveMap = {};
 
     setlists.forEach(s => {
       counts[s.song_id] = (counts[s.song_id] || 0) + 1;
-      
       const currentLive = lives.find(l => l.id === s.live_id);
       if (currentLive) {
         if (!lastLiveMap[s.song_id] || new Date(currentLive.date) > new Date(lastLiveMap[s.song_id].date)) {
@@ -125,17 +124,16 @@
       html += `<li>
                 <span class="rank-num">${rank}位</span>
                 <span class="song-title" onclick="showSongHistory('${songId}', '${title}')">${title}</span> (${count}回)
-                ${lastLive ? `<span class="last-played">直近: ${lastLive.date}「${lastLive.title}」</span>` : ''}
+                ${lastLive ? `<span class="last-played">${lastLive.date} 「${lastLive.title}」</span>` : ''}
               </li>`;
     });
     area.innerHTML = html + `</ul>`;
   }
 
-  // 未演奏曲一覧（50音順）
+  // 未演奏曲一覧（アルバム名表示・50音順）
   function showUnplayedSongs() {
     const playedSongIds = new Set(setlists.map(s => String(s.song_id).padStart(3, '0')));
     
-    // 未演奏曲を抽出してタイトル順にソート
     const unplayed = songsMaster
       .filter(sm => !playedSongIds.has(String(sm.id).padStart(3, '0')))
       .sort((a, b) => a.title.localeCompare(b.title, 'ja'));
@@ -147,7 +145,7 @@
       html += `<p>すべての曲が演奏済みです！</p>`;
     } else {
       unplayed.forEach(song => {
-        html += `<li>・${song.title} <span style="font-size:0.8em; color:#999;">(${song.Album || ''})</span></li>`;
+        html += `<li>・${song.title} <span class="album-name">(${song.Album || 'アルバム不明'})</span></li>`;
       });
     }
     area.innerHTML = html + `</ul>`;
