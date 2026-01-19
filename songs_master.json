@@ -1,32 +1,1640 @@
 [
-  { "id": "001", "title": "アポロ", "type": "s", "source": "1st Single 'アポロ'", "album": "ロマンチスト・エゴイスト" },
-  { "id": "002", "title": "ヒトリノ夜", "type": "s", "source": "2nd Single 'ヒトリノ夜'", "album": "ロマンチスト・エゴイスト" },
-  { "id": "003", "title": "ミュージック・アワー", "type": "s", "source": "3rd Single 'ミュージック・アワー'", "album": "foo?" },
-  { "id": "004", "title": "サウダージ", "type": "s", "source": "4th Single 'サウダージ'", "album": "foo?" },
-  { "id": "005", "title": "サボテン", "type": "s", "source": "5th Single 'サボテン'", "album": "foo?" },
-  { "id": "006", "title": "アゲハ蝶", "type": "s", "source": "6th Single 'アゲハ蝶'", "album": "雲をも掴む民" },
-  { "id": "007", "title": "ヴォイス", "type": "s", "source": "7th Single 'ヴォイス'", "album": "雲をも掴む民" },
-  { "id": "008", "title": "幸せについて本気出して考えてみた", "type": "s", "source": "8th Single '幸せについて本気出して考えてみた'", "album": "雲をも掴む民" },
-  { "id": "009", "title": "Mugen", "type": "s", "source": "9th Single 'Mugen'", "album": "WORLDILLIA" },
-  { "id": "010", "title": "渦", "type": "s", "source": "10th Single '渦'", "album": "WORLDILLIA" },
-  { "id": "011", "title": "音のない森", "type": "s", "source": "11th Single '音のない森'", "album": "THUMPχ" },
-  { "id": "012", "title": "メリッサ", "type": "s", "source": "12th Single 'メリッサ'", "album": "THUMPχ" },
-  { "id": "013", "title": "愛が呼ぶほうへ", "type": "s", "source": "13th Single '愛が呼ぶほうへ'", "album": "THUMPχ" },
-  { "id": "014", "title": "ラック", "type": "s", "source": "14th Single 'ラック'", "album": "THUMPχ" },
-  { "id": "015", "title": "シスター", "type": "s", "source": "15th Single 'シスター'", "album": "THUMPχ" },
-  { "id": "016", "title": "黄昏ロマンス", "type": "s", "source": "16th Single '黄昏ロマンス'", "album": "THUMPχ" },
-  { "id": "017", "title": "ネオメロガール", "type": "s", "source": "17th Single 'ネオメロガール'", "album": "THUMPχ" },
-  { "id": "018", "title": "ROLL", "type": "s", "source": "18th Single 'ROLL'", "album": "THUMPχ" },
-  { "id": "019", "title": "NaNaNa サマーガール", "type": "s", "source": "19th Single 'NaNaNa サマーガール'", "album": "m-CABI" },
-  { "id": "020", "title": "ジョバイロ", "type": "s", "source": "20th Single 'ジョバイロ'", "album": "m-CABI" },
-  { "id": "021", "title": "DON'T CALL ME CRAZY", "type": "s", "source": "21st Single 'DON'T CALL ME CRAZY'", "album": "m-CABI" },
-  { "id": "022", "title": "ハネウマライダー", "type": "s", "source": "22nd Single 'ハネウマライダー'", "album": "m-CABI" },
-  { "id": "023", "title": "Winding Road", "type": "s", "source": "23rd Single 'Winding Road'", "album": "ポルノグラフィティ" },
-  { "id": "024", "title": "リンク", "type": "s", "source": "24th Single 'リンク'", "album": "ポルノグラフィティ" },
-  { "id": "025", "title": "あなたがここにいたら", "type": "s", "source": "25th Single 'あなたがここにいたら'", "album": "ポルノグラフィティ" },
-  { "id": "026", "title": "痛い立ち位置", "type": "s", "source": "26th Single '痛い立ち位置'", "album": "PANORAMA PORNO" },
-  { "id": "027", "title": "ギフト", "type": "s", "source": "27th Single 'ギフト'", "album": "∠TRIGGER" },
-  { "id": "028", "title": "Love,too Death,too", "type": "s", "source": "28th Single 'Love,too Death,too'", "album": "∠TRIGGER" },
-  { "id": "029", "title": "今宵、月が見えずとも", "type": "s", "source": "29th Single '今宵、月が見えずとも'", "album": "∠TRIGGER" },
-  { "id": "030", "title": "この胸を、愛を射よ", "type": "s", "source": "30th Single 'この胸を、愛を射よ'", "album": "∠TRIGGER" }
+  {
+    "id": "001",
+    "title": "アポロ",
+    "type": "s",
+    "album": "アポロ"
+  },
+  {
+    "id": "002",
+    "title": "ロマンチスト・エゴイスト",
+    "type": "c",
+    "album": "アポロ"
+  },
+  {
+    "id": "003",
+    "title": "ヒトリノ夜",
+    "type": "s",
+    "album": "ヒトリノ夜"
+  },
+  {
+    "id": "004",
+    "title": "ジレンマ",
+    "type": "c",
+    "album": "ヒトリノ夜"
+  },
+  {
+    "id": "005",
+    "title": "Jazz up",
+    "type": "a",
+    "album": "ロマンチスト・エゴイスト"
+  },
+  {
+    "id": "006",
+    "title": "Century Lovers",
+    "type": "a",
+    "album": "ロマンチスト・エゴイスト"
+  },
+  {
+    "id": "007",
+    "title": "ライオン",
+    "type": "a",
+    "album": "ロマンチスト・エゴイスト"
+  },
+  {
+    "id": "008",
+    "title": "憂色～Love is you～",
+    "type": "a",
+    "album": "ロマンチスト・エゴイスト"
+  },
+  {
+    "id": "009",
+    "title": "Heart Beat",
+    "type": "a",
+    "album": "ロマンチスト・エゴイスト"
+  },
+  {
+    "id": "010",
+    "title": "マシンガントーク",
+    "type": "a",
+    "album": "ロマンチスト・エゴイスト"
+  },
+  {
+    "id": "011",
+    "title": "デッサン#1",
+    "type": "a",
+    "album": "ロマンチスト・エゴイスト"
+  },
+  {
+    "id": "012",
+    "title": "ラビュー・ラビュー",
+    "type": "a",
+    "album": "ロマンチスト・エゴイスト"
+  },
+  {
+    "id": "013",
+    "title": "リビドー",
+    "type": "a",
+    "album": "ロマンチスト・エゴイスト"
+  },
+  {
+    "id": "014",
+    "title": "ミュージック・アワー",
+    "type": "s",
+    "album": "ミュージック・アワー"
+  },
+  {
+    "id": "015",
+    "title": "PRIME",
+    "type": "c",
+    "album": "ミュージック・アワー"
+  },
+  {
+    "id": "016",
+    "title": "サウダージ",
+    "type": "s",
+    "album": "サウダージ"
+  },
+  {
+    "id": "017",
+    "title": "見つめている",
+    "type": "c",
+    "album": "サウダージ"
+  },
+  {
+    "id": "018",
+    "title": "冷たい手～3年8ヵ月～",
+    "type": "c",
+    "album": "サウダージ"
+  },
+  {
+    "id": "019",
+    "title": "Search the best way",
+    "type": "c",
+    "album": "サウダージ"
+  },
+  {
+    "id": "020",
+    "title": "サボテン",
+    "type": "s",
+    "album": "サボテン"
+  },
+  {
+    "id": "021",
+    "title": "ダイアリー00/08/26",
+    "type": "c",
+    "album": "サボテン"
+  },
+  {
+    "id": "022",
+    "title": "いつか会えたら",
+    "type": "c",
+    "album": "サボテン"
+  },
+  {
+    "id": "023",
+    "title": "サボテン Sonority",
+    "type": "c",
+    "album": "サボテン"
+  },
+  {
+    "id": "024",
+    "title": "INNERVISIONS",
+    "type": "a",
+    "album": "foo?"
+  },
+  {
+    "id": "025",
+    "title": "グァバジュース",
+    "type": "a",
+    "album": "foo?"
+  },
+  {
+    "id": "026",
+    "title": "愛なき…",
+    "type": "a",
+    "album": "foo?"
+  },
+  {
+    "id": "027",
+    "title": "オレ、天使",
+    "type": "a",
+    "album": "foo?"
+  },
+  {
+    "id": "028",
+    "title": "Name is man ～君の味方～",
+    "type": "a",
+    "album": "foo?"
+  },
+  {
+    "id": "029",
+    "title": "デッサン#2　春光",
+    "type": "a",
+    "album": "foo?"
+  },
+  {
+    "id": "030",
+    "title": "空想科学少年",
+    "type": "a",
+    "album": "foo?"
+  },
+  {
+    "id": "031",
+    "title": "Report21",
+    "type": "a",
+    "album": "foo?"
+  },
+  {
+    "id": "032",
+    "title": "夜明けまえには",
+    "type": "a",
+    "album": "foo?"
+  },
+  {
+    "id": "033",
+    "title": "アゲハ蝶",
+    "type": "s",
+    "album": "アゲハ蝶"
+  },
+  {
+    "id": "034",
+    "title": "別れ話をしよう",
+    "type": "c",
+    "album": "アゲハ蝶"
+  },
+  {
+    "id": "035",
+    "title": "狼",
+    "type": "c",
+    "album": "アゲハ蝶"
+  },
+  {
+    "id": "036",
+    "title": "ヴォイス",
+    "type": "s",
+    "album": "ヴォイス"
+  },
+  {
+    "id": "037",
+    "title": "Swing",
+    "type": "c",
+    "album": "ヴォイス"
+  },
+  {
+    "id": "038",
+    "title": "幸せについて本気出して考えてみた",
+    "type": "s",
+    "album": "幸せについて本気出して考えてみた"
+  },
+  {
+    "id": "039",
+    "title": "TVスター",
+    "type": "c",
+    "album": "幸せについて本気出して考えてみた"
+  },
+  {
+    "id": "040",
+    "title": "キミへのドライブ",
+    "type": "c",
+    "album": "幸せについて本気出して考えてみた"
+  },
+  {
+    "id": "041",
+    "title": "敵はどこだ?",
+    "type": "a",
+    "album": "雲をも掴む民"
+  },
+  {
+    "id": "042",
+    "title": "ラストオブヒーロー",
+    "type": "a",
+    "album": "雲をも掴む民"
+  },
+  {
+    "id": "043",
+    "title": "ハート",
+    "type": "a",
+    "album": "雲をも掴む民"
+  },
+  {
+    "id": "044",
+    "title": "Aokage",
+    "type": "a",
+    "album": "雲をも掴む民"
+  },
+  {
+    "id": "045",
+    "title": "クリスチーナ",
+    "type": "a",
+    "album": "雲をも掴む民"
+  },
+  {
+    "id": "046",
+    "title": "n.t.",
+    "type": "a",
+    "album": "雲をも掴む民"
+  },
+  {
+    "id": "047",
+    "title": "パレット",
+    "type": "a",
+    "album": "雲をも掴む民"
+  },
+  {
+    "id": "048",
+    "title": "ニセ彼女",
+    "type": "a",
+    "album": "雲をも掴む民"
+  },
+  {
+    "id": "049",
+    "title": "ビタースイート",
+    "type": "a",
+    "album": "雲をも掴む民"
+  },
+  {
+    "id": "050",
+    "title": "夜はお静かに",
+    "type": "a",
+    "album": "雲をも掴む民"
+  },
+  {
+    "id": "051",
+    "title": "Mugen",
+    "type": "s",
+    "album": "Mugen"
+  },
+  {
+    "id": "052",
+    "title": "Go Steady Go!",
+    "type": "c",
+    "album": "Mugen"
+  },
+  {
+    "id": "053",
+    "title": "渦",
+    "type": "s",
+    "album": "渦"
+  },
+  {
+    "id": "054",
+    "title": "ワールド☆サタデーグラフティ",
+    "type": "c",
+    "album": "渦"
+  },
+  {
+    "id": "055",
+    "title": "蝙蝠",
+    "type": "c",
+    "album": "渦"
+  },
+  {
+    "id": "056",
+    "title": "CLUB UNDERWORLD",
+    "type": "a",
+    "album": "WORLDILLIA"
+  },
+  {
+    "id": "057",
+    "title": "惑星キミ",
+    "type": "a",
+    "album": "WORLDILLIA"
+  },
+  {
+    "id": "058",
+    "title": "元素L",
+    "type": "a",
+    "album": "WORLDILLIA"
+  },
+  {
+    "id": "059",
+    "title": "デッサン#3",
+    "type": "a",
+    "album": "WORLDILLIA"
+  },
+  {
+    "id": "060",
+    "title": "ヴィンテージ",
+    "type": "a",
+    "album": "WORLDILLIA"
+  },
+  {
+    "id": "061",
+    "title": "素晴らしき人生かな？",
+    "type": "a",
+    "album": "WORLDILLIA"
+  },
+  {
+    "id": "062",
+    "title": "朱いオレンジ",
+    "type": "a",
+    "album": "WORLDILLIA"
+  },
+  {
+    "id": "063",
+    "title": "カルマの坂",
+    "type": "a",
+    "album": "WORLDILLIA"
+  },
+  {
+    "id": "064",
+    "title": "didgedilli",
+    "type": "a",
+    "album": "WORLDILLIA"
+  },
+  {
+    "id": "065",
+    "title": "くちびるにうた",
+    "type": "a",
+    "album": "WORLDILLIA"
+  },
+  {
+    "id": "066",
+    "title": "awe",
+    "type": "c",
+    "album": "音のない森"
+  },
+  {
+    "id": "067",
+    "title": "音のない森",
+    "type": "s",
+    "album": "音のない森"
+  },
+  {
+    "id": "068",
+    "title": "sonic",
+    "type": "c",
+    "album": "音のない森"
+  },
+  {
+    "id": "069",
+    "title": "メリッサ",
+    "type": "s",
+    "album": "メリッサ"
+  },
+  {
+    "id": "070",
+    "title": "見えない世界",
+    "type": "c",
+    "album": "メリッサ"
+  },
+  {
+    "id": "071",
+    "title": "月飼い",
+    "type": "c",
+    "album": "メリッサ"
+  },
+  {
+    "id": "072",
+    "title": "愛が呼ぶほうへ",
+    "type": "s",
+    "album": "愛が呼ぶほうへ"
+  },
+  {
+    "id": "073",
+    "title": "夕陽と星空と僕",
+    "type": "c",
+    "album": "愛が呼ぶほうへ"
+  },
+  {
+    "id": "074",
+    "title": "\"Hard Days",
+    "type": "z",
+    "album": "c"
+  },
+  {
+    "id": "075",
+    "title": "ラック",
+    "type": "s",
+    "album": "ラック"
+  },
+  {
+    "id": "076",
+    "title": "\"Theme of \"\"74ers\"\"\"",
+    "type": "c",
+    "album": "ラック"
+  },
+  {
+    "id": "077",
+    "title": "\"Anotherday for \"\"74ers\"\"\"",
+    "type": "c",
+    "album": "ラック"
+  },
+  {
+    "id": "078",
+    "title": "フィルムズ",
+    "type": "a",
+    "album": "PORNO GRAFFITTI BEST RED’S"
+  },
+  {
+    "id": "079",
+    "title": "まほろば○△",
+    "type": "a",
+    "album": "PORNO GRAFFITTI BEST BLUE’S"
+  },
+  {
+    "id": "080",
+    "title": "シスター",
+    "type": "s",
+    "album": "シスター"
+  },
+  {
+    "id": "081",
+    "title": "Human Being",
+    "type": "c",
+    "album": "シスター"
+  },
+  {
+    "id": "082",
+    "title": "天気職人",
+    "type": "c",
+    "album": "シスター"
+  },
+  {
+    "id": "083",
+    "title": "黄昏ロマンス",
+    "type": "s",
+    "album": "黄昏ロマンス"
+  },
+  {
+    "id": "084",
+    "title": "Sheep ～Song of teenage love soldier～",
+    "type": "c",
+    "album": "黄昏ロマンス"
+  },
+  {
+    "id": "085",
+    "title": "小説のように",
+    "type": "c",
+    "album": "黄昏ロマンス"
+  },
+  {
+    "id": "086",
+    "title": "ネオメロドラマティック",
+    "type": "s",
+    "album": "ネオメロドラマティック/ROLL"
+  },
+  {
+    "id": "087",
+    "title": "ROLL",
+    "type": "s",
+    "album": "ネオメロドラマティック/ROLL"
+  },
+  {
+    "id": "088",
+    "title": "Ouch!!",
+    "type": "a",
+    "album": "THUMPχ"
+  },
+  {
+    "id": "089",
+    "title": "東京ランドスケープ",
+    "type": "a",
+    "album": "THUMPχ"
+  },
+  {
+    "id": "090",
+    "title": "We Love Us",
+    "type": "a",
+    "album": "THUMPχ"
+  },
+  {
+    "id": "091",
+    "title": "\"Twilight",
+    "type": "z",
+    "album": "a"
+  },
+  {
+    "id": "092",
+    "title": "ドリーマー",
+    "type": "a",
+    "album": "THUMPχ"
+  },
+  {
+    "id": "093",
+    "title": "社員 on the beach",
+    "type": "a",
+    "album": "THUMPχ"
+  },
+  {
+    "id": "094",
+    "title": "プッシュプレイ",
+    "type": "a",
+    "album": "THUMPχ"
+  },
+  {
+    "id": "095",
+    "title": "うたかた",
+    "type": "a",
+    "album": "THUMPχ"
+  },
+  {
+    "id": "096",
+    "title": "何度も",
+    "type": "a",
+    "album": "THUMPχ"
+  },
+  {
+    "id": "097",
+    "title": "Let’s go to the answer",
+    "type": "a",
+    "album": "THUMPχ"
+  },
+  {
+    "id": "098",
+    "title": "NaNaNa サマーガール",
+    "type": "s",
+    "album": "NaNaNaサマーガール"
+  },
+  {
+    "id": "099",
+    "title": "PRISON MANSION",
+    "type": "c",
+    "album": "NaNaNaサマーガール"
+  },
+  {
+    "id": "100",
+    "title": "稲妻サンダー'99",
+    "type": "c",
+    "album": "NaNaNaサマーガール"
+  },
+  {
+    "id": "101",
+    "title": "ジョバイロ",
+    "type": "s",
+    "album": "ジョバイロ/DON'T CALL ME CRAZY"
+  },
+  {
+    "id": "102",
+    "title": "DON'T CALL ME CRAZY",
+    "type": "s",
+    "album": "ジョバイロ/DON'T CALL ME CRAZY"
+  },
+  {
+    "id": "103",
+    "title": "Free and Freedom",
+    "type": "c",
+    "album": "ジョバイロ/DON'T CALL ME CRAZY"
+  },
+  {
+    "id": "104",
+    "title": "ハネウマライダー",
+    "type": "s",
+    "album": "ハネウマライダー"
+  },
+  {
+    "id": "105",
+    "title": "ジューンブライダー",
+    "type": "c",
+    "album": "ハネウマライダー"
+  },
+  {
+    "id": "106",
+    "title": "タネウマライダー",
+    "type": "c",
+    "album": "ハネウマライダー"
+  },
+  {
+    "id": "107",
+    "title": "Winding Road",
+    "type": "s",
+    "album": "Winding Road"
+  },
+  {
+    "id": "108",
+    "title": "Devil in Angel",
+    "type": "c",
+    "album": "Winding Road"
+  },
+  {
+    "id": "109",
+    "title": "ウェンディの薄い文字",
+    "type": "c",
+    "album": "Winding Road"
+  },
+  {
+    "id": "110",
+    "title": "m-NAVI1 “Ride on!! Blue vehicle!”",
+    "type": "a",
+    "album": "m-CABI"
+  },
+  {
+    "id": "111",
+    "title": "BLUE SKY",
+    "type": "a",
+    "album": "m-CABI"
+  },
+  {
+    "id": "112",
+    "title": "BLUE SNOW",
+    "type": "a",
+    "album": "m-CABI"
+  },
+  {
+    "id": "113",
+    "title": "m-NAVI 2 “Keep on having fun with the MUSIC CABINET”",
+    "type": "a",
+    "album": "m-CABI"
+  },
+  {
+    "id": "114",
+    "title": "休日",
+    "type": "a",
+    "album": "m-CABI"
+  },
+  {
+    "id": "115",
+    "title": "\"m-NAVI 3 “Ready? Silvia",
+    "type": "z",
+    "album": "and Lily?”\""
+  },
+  {
+    "id": "116",
+    "title": "月明りのシルビア",
+    "type": "a",
+    "album": "m-CABI"
+  },
+  {
+    "id": "117",
+    "title": "Mr.ジェロニモ",
+    "type": "a",
+    "album": "m-CABI"
+  },
+  {
+    "id": "118",
+    "title": "横浜リリー",
+    "type": "a",
+    "album": "m-CABI"
+  },
+  {
+    "id": "119",
+    "title": "m-NAVI 4 “Let’s enjoy till the end”",
+    "type": "a",
+    "album": "m-CABI"
+  },
+  {
+    "id": "120",
+    "title": "ライン",
+    "type": "a",
+    "album": "m-CABI"
+  },
+  {
+    "id": "121",
+    "title": "グラヴィティ",
+    "type": "a",
+    "album": "m-CABI"
+  },
+  {
+    "id": "122",
+    "title": "リンク",
+    "type": "s",
+    "album": "リンク"
+  },
+  {
+    "id": "123",
+    "title": "Stand for one’s wish",
+    "type": "c",
+    "album": "リンク"
+  },
+  {
+    "id": "124",
+    "title": "It’s on my mind",
+    "type": "c",
+    "album": "リンク"
+  },
+  {
+    "id": "125",
+    "title": "空蝉",
+    "type": "a",
+    "album": "ポルノグラフィティ"
+  },
+  {
+    "id": "126",
+    "title": "ウォーカー",
+    "type": "a",
+    "album": "ポルノグラフィティ"
+  },
+  {
+    "id": "127",
+    "title": "ベアーズ",
+    "type": "a",
+    "album": "ポルノグラフィティ"
+  },
+  {
+    "id": "128",
+    "title": "農夫と赤いスカーフ",
+    "type": "a",
+    "album": "ポルノグラフィティ"
+  },
+  {
+    "id": "129",
+    "title": "鉄槌",
+    "type": "a",
+    "album": "ポルノグラフィティ"
+  },
+  {
+    "id": "130",
+    "title": "Light and Shadow",
+    "type": "a",
+    "album": "ポルノグラフィティ"
+  },
+  {
+    "id": "131",
+    "title": "My 80’s",
+    "type": "a",
+    "album": "ポルノグラフィティ"
+  },
+  {
+    "id": "132",
+    "title": "ロックバンドがやってきた",
+    "type": "a",
+    "album": "ポルノグラフィティ"
+  },
+  {
+    "id": "133",
+    "title": "\"Please say yes",
+    "type": "s",
+    "album": "yes\""
+  },
+  {
+    "id": "134",
+    "title": "そらいろ",
+    "type": "a",
+    "album": "ポルノグラフィティ"
+  },
+  {
+    "id": "135",
+    "title": "あなたがここにいたら",
+    "type": "s",
+    "album": "あなたがここにいたら"
+  },
+  {
+    "id": "136",
+    "title": "ホール",
+    "type": "c",
+    "album": "あなたがここにいたら"
+  },
+  {
+    "id": "137",
+    "title": "オニオンスープ",
+    "type": "c",
+    "album": "あなたがここにいたら"
+  },
+  {
+    "id": "138",
+    "title": "痛い立ち位置",
+    "type": "s",
+    "album": "痛い立ち位置"
+  },
+  {
+    "id": "139",
+    "title": "サマーページ",
+    "type": "c",
+    "album": "痛い立ち位置"
+  },
+  {
+    "id": "140",
+    "title": "ナイトトレイン",
+    "type": "c",
+    "album": "痛い立ち位置"
+  },
+  {
+    "id": "141",
+    "title": "ギフト",
+    "type": "s",
+    "album": "ギフト"
+  },
+  {
+    "id": "142",
+    "title": "ポストマン",
+    "type": "c",
+    "album": "ギフト"
+  },
+  {
+    "id": "143",
+    "title": "ダイアリー08/06/09",
+    "type": "c",
+    "album": "ギフト"
+  },
+  {
+    "id": "144",
+    "title": "\"Love",
+    "type": "a",
+    "album": "too\""
+  },
+  {
+    "id": "145",
+    "title": "グッドニュース",
+    "type": "c",
+    "album": "\"Love"
+  },
+  {
+    "id": "146",
+    "title": "Time or Distance",
+    "type": "c",
+    "album": "\"Love"
+  },
+  {
+    "id": "147",
+    "title": "A New Day",
+    "type": "a",
+    "album": "PORNO GRAFFITTI BEST ACE"
+  },
+  {
+    "id": "148",
+    "title": "m-FLOOD",
+    "type": "a",
+    "album": "PORNO GRAFFITTI BEST JOKER"
+  },
+  {
+    "id": "149",
+    "title": "約束の朝",
+    "type": "a",
+    "album": "PORNO GRAFFITTI BEST JOKER"
+  },
+  {
+    "id": "150",
+    "title": "今宵、月が見えずとも",
+    "type": "s",
+    "album": "今宵、月が見えずとも"
+  },
+  {
+    "id": "151",
+    "title": "この胸を、愛を射よ",
+    "type": "s",
+    "album": "この胸を、愛を射よ"
+  },
+  {
+    "id": "152",
+    "title": "ダイヤモンド",
+    "type": "c",
+    "album": "この胸を、愛を射よ"
+  },
+  {
+    "id": "153",
+    "title": "アニマロッサ",
+    "type": "s",
+    "album": "アニマロッサ"
+  },
+  {
+    "id": "154",
+    "title": "小規模な敗北",
+    "type": "c",
+    "album": "アニマロッサ"
+  },
+  {
+    "id": "155",
+    "title": "邪険にしないで",
+    "type": "c",
+    "album": "アニマロッサ"
+  },
+  {
+    "id": "156",
+    "title": "瞳の奥をのぞかせて",
+    "type": "s",
+    "album": "瞳の奥をのぞかせて"
+  },
+  {
+    "id": "157",
+    "title": "Rainbow",
+    "type": "c",
+    "album": "瞳の奥をのぞかせて"
+  },
+  {
+    "id": "158",
+    "title": "∠RECEIVER",
+    "type": "a",
+    "album": "∠TRIGGER"
+  },
+  {
+    "id": "159",
+    "title": "ネガポジ",
+    "type": "a",
+    "album": "∠TRIGGER"
+  },
+  {
+    "id": "160",
+    "title": "クリシェ",
+    "type": "a",
+    "album": "∠TRIGGER"
+  },
+  {
+    "id": "161",
+    "title": "IN THE DARK",
+    "type": "a",
+    "album": "∠TRIGGER"
+  },
+  {
+    "id": "162",
+    "title": "Introduction ～迫リ来ルMONSTER",
+    "type": "a",
+    "album": "∠TRIGGER"
+  },
+  {
+    "id": "163",
+    "title": "MONSTER",
+    "type": "a",
+    "album": "∠TRIGGER"
+  },
+  {
+    "id": "164",
+    "title": "曖昧なひとたち",
+    "type": "a",
+    "album": "∠TRIGGER"
+  },
+  {
+    "id": "165",
+    "title": "光の矢",
+    "type": "a",
+    "album": "∠TRIGGER"
+  },
+  {
+    "id": "166",
+    "title": "ロスト",
+    "type": "a",
+    "album": "∠TRIGGER"
+  },
+  {
+    "id": "167",
+    "title": "君は100%",
+    "type": "s",
+    "album": "君は100%"
+  },
+  {
+    "id": "168",
+    "title": "煙",
+    "type": "c",
+    "album": "君は100%"
+  },
+  {
+    "id": "169",
+    "title": "GET IT ON",
+    "type": "c",
+    "album": "君は100%"
+  },
+  {
+    "id": "170",
+    "title": "EXIT",
+    "type": "s",
+    "album": "EXIT"
+  },
+  {
+    "id": "171",
+    "title": "Regret",
+    "type": "c",
+    "album": "EXIT"
+  },
+  {
+    "id": "172",
+    "title": "LIVE ON LIVE",
+    "type": "c",
+    "album": "EXIT"
+  },
+  {
+    "id": "173",
+    "title": "ワンモアタイム",
+    "type": "s",
+    "album": "ワンモアタイム"
+  },
+  {
+    "id": "174",
+    "title": "マイモデル",
+    "type": "c",
+    "album": "ワンモアタイム"
+  },
+  {
+    "id": "175",
+    "title": "グッバイサマー",
+    "type": "c",
+    "album": "ワンモアタイム"
+  },
+  {
+    "id": "176",
+    "title": "ゆきのいろ",
+    "type": "s",
+    "album": "ゆきのいろ"
+  },
+  {
+    "id": "177",
+    "title": "生まれた街",
+    "type": "c",
+    "album": "ゆきのいろ"
+  },
+  {
+    "id": "178",
+    "title": "2012Spark",
+    "type": "s",
+    "album": "2012Spark"
+  },
+  {
+    "id": "179",
+    "title": "9.9m2",
+    "type": "c",
+    "album": "2012Spark"
+  },
+  {
+    "id": "180",
+    "title": "メジャー",
+    "type": "a",
+    "album": "PANORAMA PORNO"
+  },
+  {
+    "id": "181",
+    "title": "FLAG",
+    "type": "a",
+    "album": "PANORAMA PORNO"
+  },
+  {
+    "id": "182",
+    "title": "電光石火",
+    "type": "a",
+    "album": "PANORAMA PORNO"
+  },
+  {
+    "id": "183",
+    "title": "星球",
+    "type": "a",
+    "album": "PANORAMA PORNO"
+  },
+  {
+    "id": "184",
+    "title": "素敵すぎてしまった",
+    "type": "a",
+    "album": "PANORAMA PORNO"
+  },
+  {
+    "id": "185",
+    "title": "カシオペヤの後悔",
+    "type": "a",
+    "album": "PANORAMA PORNO"
+  },
+  {
+    "id": "186",
+    "title": "Truly",
+    "type": "a",
+    "album": "PANORAMA PORNO"
+  },
+  {
+    "id": "187",
+    "title": "はなむけ",
+    "type": "a",
+    "album": "PANORAMA PORNO"
+  },
+  {
+    "id": "188",
+    "title": "メリーゴーラウンド",
+    "type": "a",
+    "album": "PANORAMA PORNO"
+  },
+  {
+    "id": "189",
+    "title": "光のストーリー",
+    "type": "a",
+    "album": "PANORAMA PORNO"
+  },
+  {
+    "id": "190",
+    "title": "カゲボウシ",
+    "type": "s",
+    "album": "カゲボウシ"
+  },
+  {
+    "id": "191",
+    "title": "やがて哀しきロックンロール",
+    "type": "c",
+    "album": "カゲボウシ"
+  },
+  {
+    "id": "192",
+    "title": "ルーズ",
+    "type": "c",
+    "album": "カゲボウシ"
+  },
+  {
+    "id": "193",
+    "title": "瞬く星の下で",
+    "type": "s",
+    "album": "瞬く星の下で"
+  },
+  {
+    "id": "194",
+    "title": "極上ランディング",
+    "type": "c",
+    "album": "瞬く星の下で"
+  },
+  {
+    "id": "195",
+    "title": "むかいあわせ",
+    "type": "c",
+    "album": "瞬く星の下で"
+  },
+  {
+    "id": "196",
+    "title": "青春花道",
+    "type": "s",
+    "album": "青春花道"
+  },
+  {
+    "id": "197",
+    "title": "エピキュリアン",
+    "type": "c",
+    "album": "青春花道"
+  },
+  {
+    "id": "198",
+    "title": "おいでよサンタモニカ",
+    "type": "c",
+    "album": "青春花道"
+  },
+  {
+    "id": "199",
+    "title": "東京デスティニー",
+    "type": "s",
+    "album": "東京デスティニー"
+  },
+  {
+    "id": "200",
+    "title": "ダリア",
+    "type": "c",
+    "album": "東京デスティニー"
+  },
+  {
+    "id": "201",
+    "title": "Mission of the Far East",
+    "type": "c",
+    "album": "東京デスティニー"
+  },
+  {
+    "id": "202",
+    "title": "ひとひら",
+    "type": "a",
+    "album": "PORNOGRAFFITTI 15TH ANNIVERSARY “ALL TIME SINGLES”"
+  },
+  {
+    "id": "203",
+    "title": "俺たちのセレブレーション",
+    "type": "s",
+    "album": "俺たちのセレブレーション"
+  },
+  {
+    "id": "204",
+    "title": "365日",
+    "type": "c",
+    "album": "俺たちのセレブレーション"
+  },
+  {
+    "id": "205",
+    "title": "スロウ･ザ･コイン",
+    "type": "c",
+    "album": "俺たちのセレブレーション"
+  },
+  {
+    "id": "206",
+    "title": "ワン・ウーマン・ショー～甘い幻～",
+    "type": "s",
+    "album": "ワン・ウーマン・ショー ～甘い幻～"
+  },
+  {
+    "id": "207",
+    "title": "なにはなくとも",
+    "type": "c",
+    "album": "ワン・ウーマン・ショー ～甘い幻～"
+  },
+  {
+    "id": "208",
+    "title": "みんなのカープ",
+    "type": "c",
+    "album": "ワン・ウーマン・ショー ～甘い幻～"
+  },
+  {
+    "id": "209",
+    "title": "オー!リバル",
+    "type": "s",
+    "album": "オー！リバル"
+  },
+  {
+    "id": "210",
+    "title": "デザイア",
+    "type": "c",
+    "album": "オー！リバル"
+  },
+  {
+    "id": "211",
+    "title": "空が青すぎて",
+    "type": "c",
+    "album": "オー！リバル"
+  },
+  {
+    "id": "212",
+    "title": "ANGRY BIRD",
+    "type": "a",
+    "album": "RHINOCEROS"
+  },
+  {
+    "id": "213",
+    "title": "Ohhh!!! HANABI",
+    "type": "a",
+    "album": "RHINOCEROS"
+  },
+  {
+    "id": "214",
+    "title": "wataridori",
+    "type": "a",
+    "album": "RHINOCEROS"
+  },
+  {
+    "id": "215",
+    "title": "Hey Mama",
+    "type": "a",
+    "album": "RHINOCEROS"
+  },
+  {
+    "id": "216",
+    "title": "Stand Alone",
+    "type": "a",
+    "album": "RHINOCEROS"
+  },
+  {
+    "id": "217",
+    "title": "ソーシャル ESCAPE",
+    "type": "a",
+    "album": "RHINOCEROS"
+  },
+  {
+    "id": "218",
+    "title": "バベルの風",
+    "type": "a",
+    "album": "RHINOCEROS"
+  },
+  {
+    "id": "219",
+    "title": "AGAIN",
+    "type": "a",
+    "album": "RHINOCEROS"
+  },
+  {
+    "id": "220",
+    "title": "Good luck to you",
+    "type": "a",
+    "album": "RHINOCEROS"
+  },
+  {
+    "id": "221",
+    "title": "螺旋",
+    "type": "a",
+    "album": "RHINOCEROS"
+  },
+  {
+    "id": "222",
+    "title": "ミステーロ",
+    "type": "a",
+    "album": "RHINOCEROS"
+  },
+  {
+    "id": "223",
+    "title": "THE DAY",
+    "type": "s",
+    "album": "THE DAY"
+  },
+  {
+    "id": "224",
+    "title": "My wedding song",
+    "type": "c",
+    "album": "THE DAY"
+  },
+  {
+    "id": "225",
+    "title": "ルーシーに微熱",
+    "type": "c",
+    "album": "THE DAY"
+  },
+  {
+    "id": "226",
+    "title": "LiAR",
+    "type": "s",
+    "album": "LiAR/真っ白な灰になるまで、燃やし尽くせ"
+  },
+  {
+    "id": "227",
+    "title": "真っ白な灰になるまで、燃やし尽くせ",
+    "type": "s",
+    "album": "LiAR/真っ白な灰になるまで、燃やし尽くせ"
+  },
+  {
+    "id": "228",
+    "title": "Part time love affair",
+    "type": "c",
+    "album": "LiAR/真っ白な灰になるまで、燃やし尽くせ"
+  },
+  {
+    "id": "229",
+    "title": "キング&クイーン",
+    "type": "s",
+    "album": "キング&クイーン"
+  },
+  {
+    "id": "230",
+    "title": "Montage",
+    "type": "c",
+    "album": "キング&クイーン"
+  },
+  {
+    "id": "231",
+    "title": "夕陽の色",
+    "type": "c",
+    "album": "キング&クイーン"
+  },
+  {
+    "id": "232",
+    "title": "Working men blues",
+    "type": "a",
+    "album": "BUTTERFLY EFFECT"
+  },
+  {
+    "id": "233",
+    "title": "君の愛読書がケルアックだった件",
+    "type": "a",
+    "album": "BUTTERFLY EFFECT"
+  },
+  {
+    "id": "234",
+    "title": "I believe",
+    "type": "a",
+    "album": "BUTTERFLY EFFECT"
+  },
+  {
+    "id": "235",
+    "title": "Fade away",
+    "type": "a",
+    "album": "BUTTERFLY EFFECT"
+  },
+  {
+    "id": "236",
+    "title": "クリスマスのHide&Seek",
+    "type": "a",
+    "album": "BUTTERFLY EFFECT"
+  },
+  {
+    "id": "237",
+    "title": "MICROWAVE",
+    "type": "a",
+    "album": "BUTTERFLY EFFECT"
+  },
+  {
+    "id": "238",
+    "title": "夜間飛行",
+    "type": "a",
+    "album": "BUTTERFLY EFFECT"
+  },
+  {
+    "id": "239",
+    "title": "170828-29",
+    "type": "a",
+    "album": "BUTTERFLY EFFECT"
+  },
+  {
+    "id": "240",
+    "title": "スパイス",
+    "type": "a",
+    "album": "BUTTERFLY EFFECT"
+  },
+  {
+    "id": "241",
+    "title": "カメレオン・レンズ",
+    "type": "s",
+    "album": "カメレオン・レンズ"
+  },
+  {
+    "id": "242",
+    "title": "前夜",
+    "type": "c",
+    "album": "カメレオン・レンズ"
+  },
+  {
+    "id": "243",
+    "title": "ブレス",
+    "type": "s",
+    "album": "ブレス"
+  },
+  {
+    "id": "244",
+    "title": "海月",
+    "type": "c",
+    "album": "ブレス"
+  },
+  {
+    "id": "245",
+    "title": "ライラ",
+    "type": "c",
+    "album": "ブレス"
+  },
+  {
+    "id": "246",
+    "title": "VS",
+    "type": "s",
+    "album": "VS"
+  },
+  {
+    "id": "247",
+    "title": "プリズム",
+    "type": "c",
+    "album": "VS"
+  },
+  {
+    "id": "248",
+    "title": "一雫",
+    "type": "c",
+    "album": "VS"
+  },
+  {
+    "id": "249",
+    "title": "テーマソング",
+    "type": "s",
+    "album": "テーマソング"
+  },
+  {
+    "id": "250",
+    "title": "REUNION",
+    "type": "c",
+    "album": "テーマソング"
+  },
+  {
+    "id": "251",
+    "title": "IT'S A NEW ERA",
+    "type": "c",
+    "album": "テーマソング"
+  },
+  {
+    "id": "252",
+    "title": "暁",
+    "type": "a",
+    "album": "暁"
+  },
+  {
+    "id": "253",
+    "title": "悪霊少女",
+    "type": "a",
+    "album": "暁"
+  },
+  {
+    "id": "254",
+    "title": "Zombies are standing out",
+    "type": "a",
+    "album": "暁"
+  },
+  {
+    "id": "255",
+    "title": "ナンバー",
+    "type": "a",
+    "album": "暁"
+  },
+  {
+    "id": "256",
+    "title": "バトロワ・ゲームズ",
+    "type": "a",
+    "album": "暁"
+  },
+  {
+    "id": "257",
+    "title": "メビウス",
+    "type": "a",
+    "album": "暁"
+  },
+  {
+    "id": "258",
+    "title": "You are my Queen",
+    "type": "a",
+    "album": "暁"
+  },
+  {
+    "id": "259",
+    "title": "フラワー",
+    "type": "a",
+    "album": "暁"
+  },
+  {
+    "id": "260",
+    "title": "クラウド",
+    "type": "a",
+    "album": "暁"
+  },
+  {
+    "id": "261",
+    "title": "ジルダ",
+    "type": "a",
+    "album": "暁"
+  },
+  {
+    "id": "262",
+    "title": "証言",
+    "type": "a",
+    "album": "暁"
+  },
+  {
+    "id": "263",
+    "title": "解放区",
+    "type": "s",
+    "album": "解放区"
+  },
+  {
+    "id": "264",
+    "title": "アビが鳴く",
+    "type": "c",
+    "album": "解放区"
+  },
+  {
+    "id": "265",
+    "title": "OLD VILLAGER",
+    "type": "c",
+    "album": "解放区"
+  },
+  {
+    "id": "266",
+    "title": "ヴィヴァーチェ",
+    "type": "z",
+    "album": "ヴィヴァーチェ"
+  },
+  {
+    "id": "267",
+    "title": "言伝",
+    "type": "z",
+    "album": "言伝"
+  },
+  {
+    "id": "268",
+    "title": "THE REVO",
+    "type": "s",
+    "album": "THE REVO"
+  },
+  {
+    "id": "269",
+    "title": "風波",
+    "type": "c",
+    "album": "THE REVO"
+  },
+  {
+    "id": "270",
+    "title": "Shake hands",
+    "type": "c",
+    "album": "THE REVO"
+  },
+  {
+    "id": "271",
+    "title": "はみだし御免",
+    "type": "z",
+    "album": "はみだし御免"
+  },
+  {
+    "id": "272",
+    "title": "オレ、Cupid",
+    "type": "z",
+    "album": "未発売"
+  },
+  {
+    "id": "273",
+    "title": "X'mas is made of Love",
+    "type": "z",
+    "album": "未発売"
+  }
 ]
