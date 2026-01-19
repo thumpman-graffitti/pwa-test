@@ -13,16 +13,20 @@
     button { cursor: pointer; background: #007bff; color: white; border: none; font-weight: bold; }
     button:hover { background: #0056b3; }
     .secondary-btn { background: #6c757d; }
-    li { margin-bottom: 10px; border-bottom: 1px dotted #ccc; padding-bottom: 5px; list-style: none; }
+    .tertiary-btn { background: #28a745; } /* 未演奏用 */
+    li { margin-bottom: 10px; border-bottom: 1px dotted #ccc; padding-bottom: 8px; list-style: none; }
     .stats-container { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 20px; }
     .live-card { border-left: 5px solid #007bff; background: #fff; padding: 10px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     .loading { text-align: center; color: #666; margin-top: 50px; }
     .encore { color: #dc3545; font-weight: bold; margin-left: 5px; }
+    .rank-num { font-weight: bold; color: #555; width: 30px; display: inline-block; }
+    .last-played { display: block; font-size: 0.8em; color: #666; margin-left: 35px; }
+    .song-title { color: #007bff; text-decoration: underline; cursor: pointer; font-weight: bold; }
   </style>
 </head>
 <body>
 
-<h1>🎵 PG DB</h1>
+<h1>🎵 PG DB２</h1>
 
 <div id="loader" class="loading">データを読み込み中...</div>
 
@@ -33,9 +37,10 @@
   </select>
 
   <button onclick="showGlobalStats()" class="secondary-btn">📊 全演奏曲ランキングを表示</button>
+  <button onclick="showUnplayedSongs()" class="tertiary-btn">🔕 未演奏の曲一覧を表示</button>
 
   <div id="displayArea" class="stats-container">
-    <p>メニューからライブを選択するか、ランキングを表示してください。</p>
+    <p>メニューから操作を選択してください。</p>
   </div>
 </div>
 
@@ -44,7 +49,6 @@
   let setlists = [];
   let songsMaster = [];
 
-  // 1. JSONデータの読み込み
   async function init() {
     try {
       const [resLives, resSets, resSongs] = await Promise.all([
@@ -61,105 +65,114 @@
       document.getElementById('loader').style.display = 'none';
       document.getElementById('app-ui').style.display = 'block';
     } catch (error) {
-      document.getElementById('loader').innerHTML = 
-        `<p style="color:red;">データの読み込みに失敗しました。<br>lives.json, setlists.json, songs_master.json がGitHub上に存在するか確認してください。</p>`;
+      document.getElementById('loader').innerHTML = `<p style="color:red;">データの読み込みに失敗しました。</p>`;
       console.error(error);
     }
   }
 
-  // 2. セレクトボックスの生成
   function renderLiveSelect() {
     const select = document.getElementById('liveSelect');
-    // 日付の新しい順に並び替えて表示
     const sortedLives = [...lives].sort((a, b) => new Date(b.date) - new Date(a.date));
-    
     sortedLives.forEach(live => {
       const opt = document.createElement('option');
       opt.value = live.id;
       opt.textContent = `${live.date} ${live.title}`;
       select.appendChild(opt);
     });
-
-    select.addEventListener('change', (e) => {
-      if (e.target.value) showSetlist(e.target.value);
-    });
+    select.addEventListener('change', (e) => { if (e.target.value) showSetlist(e.target.value); });
   }
 
-  // 3. セットリスト表示
   function showSetlist(liveId) {
     const live = lives.find(l => l.id === liveId);
     const filteredSet = setlists.filter(s => s.live_id === liveId).sort((a, b) => a.order - b.order);
     const area = document.getElementById('displayArea');
-
-    let html = `<h2>${live.title}</h2>`;
-    html += `<p>📅 ${live.date} 📍 ${live.venue}</p>`;
-    if(live.description) html += `<p style="font-size:0.9em; color:#666;">📝 ${live.description}</p>`;
-    html += `<hr><ul>`;
-
+    let html = `<h2>${live.title}</h2><p>📅 ${live.date} 📍 ${live.venue}</p><hr><ul>`;
     filteredSet.forEach(item => {
-      html += `<li>${item.order}. <strong>${item.song_title}</strong>${item.is_encore ? '<span class="encore"> (Encore)</span>' : ''}</li>`;
+      html += `<li>${item.order}. <strong>${item.song_title}</strong>${item.is_encore ? '<span class="encore">(Encore)</span>' : ''}</li>`;
     });
-
     html += `</ul>`;
     area.innerHTML = html;
   }
 
-  // 4. ランキング表示
+  // 全演奏ランキング（順位・直近演奏付き）
   function showGlobalStats() {
     const counts = {};
+    const lastLiveMap = {}; // 最新の演奏情報を保持
+
     setlists.forEach(s => {
       counts[s.song_id] = (counts[s.song_id] || 0) + 1;
+      
+      const currentLive = lives.find(l => l.id === s.live_id);
+      if (currentLive) {
+        if (!lastLiveMap[s.song_id] || new Date(currentLive.date) > new Date(lastLiveMap[s.song_id].date)) {
+          lastLiveMap[s.song_id] = currentLive;
+        }
+      }
     });
 
     const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
     const area = document.getElementById('displayArea');
-
-    let html = `<h2>📊 全演奏曲ランキング</h2><p style="font-size:0.8em;">（曲名クリックで演奏履歴を表示）</p><ul>`;
+    let html = `<h2>📊 全演奏曲ランキング</h2><ul>`;
     
-    sorted.forEach(([songId, count]) => {
-      // songsMasterから曲情報を探す（IDが数値か文字列か曖昧な場合を考慮して比較）
-      const song = songsMaster.find(sm => String(sm.id).padStart(3, '0') === String(songId).padStart(3, '0'));
-      const title = song ? song.title : (setlists.find(s => s.song_id === songId)?.song_title || `Unknown ID:${songId}`);
+    let rank = 1;
+    sorted.forEach(([songId, count], index) => {
+      if (index > 0 && count < sorted[index - 1][1]) rank = index + 1;
       
-      html += `<li onclick="showSongHistory('${songId}', '${title}')" style="cursor:pointer; color:#007bff; text-decoration:underline;">
-                ${title} (${count}回)
+      const song = songsMaster.find(sm => String(sm.id).padStart(3, '0') === String(songId).padStart(3, '0'));
+      const title = song ? song.title : `ID:${songId}`;
+      const lastLive = lastLiveMap[songId];
+      
+      html += `<li>
+                <span class="rank-num">${rank}位</span>
+                <span class="song-title" onclick="showSongHistory('${songId}', '${title}')">${title}</span> (${count}回)
+                ${lastLive ? `<span class="last-played">直近: ${lastLive.date}「${lastLive.title}」</span>` : ''}
               </li>`;
     });
-    
-    html += `</ul>`;
-    area.innerHTML = html;
+    area.innerHTML = html + `</ul>`;
   }
 
-  // 5. 特定の曲の演奏履歴
+  // 未演奏曲一覧（50音順）
+  function showUnplayedSongs() {
+    const playedSongIds = new Set(setlists.map(s => String(s.song_id).padStart(3, '0')));
+    
+    // 未演奏曲を抽出してタイトル順にソート
+    const unplayed = songsMaster
+      .filter(sm => !playedSongIds.has(String(sm.id).padStart(3, '0')))
+      .sort((a, b) => a.title.localeCompare(b.title, 'ja'));
+
+    const area = document.getElementById('displayArea');
+    let html = `<h2>🔕 未演奏の曲一覧 (${unplayed.length}曲)</h2><ul>`;
+    
+    if (unplayed.length === 0) {
+      html += `<p>すべての曲が演奏済みです！</p>`;
+    } else {
+      unplayed.forEach(song => {
+        html += `<li>・${song.title} <span style="font-size:0.8em; color:#999;">(${song.Album || ''})</span></li>`;
+      });
+    }
+    area.innerHTML = html + `</ul>`;
+  }
+
   function showSongHistory(songId, songTitle) {
     const history = setlists.filter(s => String(s.song_id).padStart(3, '0') === String(songId).padStart(3, '0'));
     const area = document.getElementById('displayArea');
-
     let html = `<h3>🎸 「${songTitle}」の演奏履歴</h3>`;
     html += `<button onclick="showGlobalStats()" class="secondary-btn" style="width:auto; padding:5px 15px;">← ランキングに戻る</button><br><br>`;
     
-    history.forEach(h => {
+    history.sort((a,b) => {
+      const liveA = lives.find(l => l.id === a.live_id);
+      const liveB = lives.find(l => l.id === b.live_id);
+      return new Date(liveB.date) - new Date(liveA.date);
+    }).forEach(h => {
       const live = lives.find(l => l.id === h.live_id);
       if (live) {
-        html += `
-          <div class="live-card">
-            <div style="font-weight:bold;">📅 ${live.date}</div>
-            <div>🎤 ${live.title}</div>
-            <div style="font-size:0.8em; color:#666;">📍 ${live.venue} / ${h.is_encore ? 'アンコール' : '本編'}</div>
-          </div>`;
+        html += `<div class="live-card"><b>📅 ${live.date}</b><br>🎤 ${live.title}<br><small>📍 ${live.venue}</small></div>`;
       }
     });
     area.innerHTML = html;
   }
 
-  // 初期化実行
   init();
-
-  // Service Worker登録
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').then(() => console.log('SW registered'));
-  }
 </script>
-
 </body>
 </html>
