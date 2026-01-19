@@ -27,7 +27,7 @@
 </head>
 <body>
 
-<h1>🎵 PG DB３</h1>
+<h1>🎵 PG DB４</h1>
 
 <div id="loader" class="loading">データを読み込み中...</div>
 
@@ -94,7 +94,7 @@
     area.innerHTML = html + `</ul>`;
   }
 
-  // 全演奏ランキング（順位・最新演奏情報付き）
+// 全演奏ランキング（順位・最新演奏情報付き）
   function showGlobalStats() {
     const counts = {};
     const lastLiveMap = {};
@@ -115,10 +115,18 @@
     
     let rank = 1;
     sorted.forEach(([songId, count], index) => {
+      // 順位の計算（前の曲と同じ回数なら同順位）
       if (index > 0 && count < sorted[index - 1][1]) rank = index + 1;
       
-      const song = songsMaster.find(sm => String(sm.id).padStart(3, '0') === String(songId).padStart(3, '0'));
-      const title = song ? song.title : `ID:${songId}`;
+      // ★修正ポイント：曲マスタから一致する曲を探すロジックを強化
+      const song = songsMaster.find(sm => {
+        const smId = String(sm.ID || sm.id || sm.No || "").padStart(3, '0');
+        const targetId = String(songId).padStart(3, '0');
+        return smId === targetId;
+      });
+
+      // 曲名が決まらない場合のフォールバック（セットリスト内の名称を使用）
+      const title = song ? song.title : (setlists.find(s => s.song_id === songId)?.song_title || `ID:${songId}`);
       const lastLive = lastLiveMap[songId];
       
       html += `<li>
@@ -131,11 +139,17 @@
   }
 
   // 未演奏曲一覧（アルバム名表示・50音順）
+// 未演奏曲一覧（アルバム名表示・50音順）
   function showUnplayedSongs() {
+    // 演奏済みIDをセットに格納（比較しやすいように文字列の3桁に揃える）
     const playedSongIds = new Set(setlists.map(s => String(s.song_id).padStart(3, '0')));
     
     const unplayed = songsMaster
-      .filter(sm => !playedSongIds.has(String(sm.id).padStart(3, '0')))
+      .filter(sm => {
+        // IDまたはNoというキーを探す
+        const songId = String(sm.id || sm.No || "").padStart(3, '0');
+        return !playedSongIds.has(songId);
+      })
       .sort((a, b) => a.title.localeCompare(b.title, 'ja'));
 
     const area = document.getElementById('displayArea');
@@ -145,11 +159,14 @@
       html += `<p>すべての曲が演奏済みです！</p>`;
     } else {
       unplayed.forEach(song => {
-        html += `<li>・${song.title} <span class="album-name">(${song.Album || 'アルバム不明'})</span></li>`;
+        // アルバム名のキーが 'Album' か 'CD' か 'album' かを柔軟に判定
+        const albumName = song.Album || song.CD || song.album || 'アルバム不明';
+        html += `<li>・${song.title} <span class="album-name">(${albumName})</span></li>`;
       });
     }
     area.innerHTML = html + `</ul>`;
   }
+
 
   function showSongHistory(songId, songTitle) {
     const history = setlists.filter(s => String(s.song_id).padStart(3, '0') === String(songId).padStart(3, '0'));
@@ -174,3 +191,4 @@
 </script>
 </body>
 </html>
+
