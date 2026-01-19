@@ -8,392 +8,158 @@
   <meta name="apple-mobile-web-app-title" content="PG Live Log" />
   <title>PG Live Log</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
-    input, select, button { display: block; width: 100%; margin-bottom: 10px; padding: 10px; box-sizing: border-box; }
-    button { cursor: pointer; background: #f0f0f0; border: 1px solid #ccc; }
-    .delete-btn { background: #ffcccc; border: 1px solid #ff0000; width: auto; display: inline; padding: 2px 8px; margin-left: 10px; }
-    li { margin-bottom: 10px; border-bottom: 1px dotted #ccc; padding-bottom: 5px; }
+    body { font-family: sans-serif; padding: 20px; line-height: 1.6; max-width: 800px; margin: auto; }
+    input, select, button { display: block; width: 100%; margin-bottom: 10px; padding: 12px; box-sizing: border-box; border-radius: 5px; border: 1px solid #ccc; font-size: 16px; }
+    button { cursor: pointer; background: #007bff; color: white; border: none; font-weight: bold; }
+    button:hover { background: #0056b3; }
+    .secondary-btn { background: #6c757d; }
+    li { margin-bottom: 10px; border-bottom: 1px dotted #ccc; padding-bottom: 5px; list-style: none; }
+    .stats-container { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 20px; }
+    .live-card { border-left: 5px solid #007bff; background: #fff; padding: 10px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .loading { text-align: center; color: #666; margin-top: 50px; }
+    .encore { color: #dc3545; font-weight: bold; margin-left: 5px; }
   </style>
 </head>
 <body>
 
-<h1>🎵 PGDB３</h1>
+<h1>🎵 PG DB</h1>
 
-<label>ライブを選択：</label>
-<select id="masterSelect">
-  <option value="">読み込み中...</option>
-</select>
+<div id="loader" class="loading">データを読み込み中...</div>
 
-<input id="memo" type="text" placeholder="座席・メモ（例：アリーナA5）" />
-<button onclick="saveLive()" style="background: #e1f5fe;">✨ 参加登録</button>
+<div id="app-ui" style="display:none;">
+  <label>ライブ履歴を表示：</label>
+  <select id="liveSelect">
+    <option value="">-- ライブを選択 --</option>
+  </select>
 
-<hr>
+  <button onclick="showGlobalStats()" class="secondary-btn">📊 全演奏曲ランキングを表示</button>
 
-<button onclick="exportData()">📤 バックアップ（共有からファイル保存）</button>
-<input type="file" id="importFile" accept=".json" onchange="importData()" />
-<button onclick="testClear()" style="color: red;">🧪 全削除テスト</button>
-
-<hr>
-<h2>📊 全ライブ統計</h2>
-<button onclick="showGlobalStats()" style="background: #fff9c4;">全ライブの演奏回数ランキングを集計</button>
-
-<button onclick="showUnplayedSongs()" style="background: #e1f5fe; margin-top: 5px;">🚫 未演奏曲（レア曲）リストを表示</button>
-  
-  <div id="statsArea" style="background: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 20px; max-height: 300px; overflow-y: auto;">
-  ここにランキングが表示されます
+  <div id="displayArea" class="stats-container">
+    <p>メニューからライブを選択するか、ランキングを表示してください。</p>
+  </div>
 </div>
-<hr>
-
-
-  
-<h2>参加履歴</h2>
-<ul id="list"></ul>
 
 <script>
-  let db;
+  let lives = [];
+  let setlists = [];
+  let songsMaster = [];
 
-  // DB初期化
-  const request = indexedDB.open("pgLiveDB", 1);
-  request.onupgradeneeded = (event) => {
-    db = event.target.result;
-    if (!db.objectStoreNames.contains("lives")) {
-      db.createObjectStore("lives", { keyPath: "id", autoIncrement: true });
+  // 1. JSONデータの読み込み
+  async function init() {
+    try {
+      const [resLives, resSets, resSongs] = await Promise.all([
+        fetch('lives.json'),
+        fetch('setlists.json'),
+        fetch('songs_master.json')
+      ]);
+
+      lives = await resLives.json();
+      setlists = await resSets.json();
+      songsMaster = await resSongs.json();
+
+      renderLiveSelect();
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('app-ui').style.display = 'block';
+    } catch (error) {
+      document.getElementById('loader').innerHTML = 
+        `<p style="color:red;">データの読み込みに失敗しました。<br>lives.json, setlists.json, songs_master.json がGitHub上に存在するか確認してください。</p>`;
+      console.error(error);
     }
-  };
-  request.onsuccess = (event) => {
-    db = event.target.result;
-    render();
-    loadMasterData(); // DB準備完了後にマスター読み込み
-  };
-
-  // 1. マスターデータを取得してプルダウンに入れる
-  function loadMasterData() {
-    // ★ここを自分のGitHub URLに書き換えてください！
-    const masterUrl = "https://thumpman-graffitti.github.io/pwa-test/live_master.json";
-
-    fetch(masterUrl)
-      .then(res => res.json())
-      .then(data => {
-        const select = document.getElementById("masterSelect");
-        select.innerHTML = '<option value="">ライブを選択してください</option>';
-        data.forEach(live => {
-          const option = document.createElement("option");
-          option.value = JSON.stringify(live);
-          option.textContent = `${live.date} - ${live.tour}`;
-          select.appendChild(option);
-        });
-      })
-      .catch(err => {
-        console.error(err);
-        document.getElementById("masterSelect").innerHTML = '<option value="">データ取得失敗</option>';
-      });
   }
 
-  // 2. 保存処理（1つに統合）
-  function saveLive() {
-    const selectedValue = document.getElementById("masterSelect").value;
-    const memo = document.getElementById("memo").value;
-
-    if (!selectedValue) {
-      alert("ライブを選択してください");
-      return;
-    }
-
-    const liveData = JSON.parse(selectedValue);
-    const tx = db.transaction("lives", "readwrite");
-    const store = tx.objectStore("lives");
-
-    store.add({ 
-      date: liveData.date, 
-      venue: liveData.venue,
-      tour: liveData.tour,
-      memo: memo 
-    });
-
-    tx.oncomplete = () => {
-      document.getElementById("memo").value = "";
-      render();
-    };
-  }
-
-  // 3. 表示処理
-  function render() {
-    const list = document.getElementById("list");
-    list.innerHTML = "";
-
-    const tx = db.transaction("lives", "readonly");
-    const store = tx.objectStore("lives");
-
-    store.openCursor().onsuccess = (event) => {
-      const cursor = event.target.result;
-      if (cursor) {
-        const li = document.createElement("li");
-        const d = cursor.value;
-        
-        // 表示内容をリッチに
-        li.innerHTML = `
-          <strong>${d.date} ${d.tour}</strong><br>
-          <small>会場: ${d.venue} ${d.memo ? ' / メモ: ' + d.memo : ''}</small>
-        `;
-
-        const delBtn = document.createElement("button");
-        delBtn.textContent = "削除";
-        delBtn.className = "delete-btn";
-        const currentId = cursor.primaryKey;
-        delBtn.onclick = () => deleteLive(currentId);
-
-        li.appendChild(delBtn);
-        list.appendChild(li);
-        cursor.continue();
-      }
-    };
-  }
-
-  // 削除処理
-  function deleteLive(id) {
-    if (!confirm("この履歴を削除しますか？")) return;
-    const tx = db.transaction("lives", "readwrite");
-    tx.objectStore("lives").delete(id);
-    tx.oncomplete = () => render();
-  }
-
-  // エクスポート（BOM付きUTF-8）
-  function exportData() {
-    const tx = db.transaction("lives", "readonly");
-    tx.objectStore("lives").getAll().onsuccess = (e) => {
-      const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
-      const blob = new Blob([bom, JSON.stringify(e.target.result, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "pg_live_log.json";
-      a.click();
-    };
-  }
-
-  // インポート
-  function importData() {
-    const file = document.getElementById("importFile").files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const json = JSON.parse(e.target.result);
-      const tx = db.transaction("lives", "readwrite");
-      const store = tx.objectStore("lives");
-      json.forEach(item => { delete item.id; store.add(item); });
-      tx.oncomplete = () => { alert("復元完了"); render(); };
-    };
-    reader.readAsText(file);
-  }
-
-  // 全削除
-  function testClear() {
-    if (!confirm("全データを削除しますか？")) return;
-    const tx = db.transaction("lives", "readwrite");
-    tx.objectStore("lives").clear();
-    tx.oncomplete = () => render();
-  }
-
-// 全ライブ統計（マスターデータのみを使用）を表示する関数
-function showGlobalStats() {
-  const masterUrl = "https://thumpman-graffitti.github.io/pwa-test/live_master.json";
-  const songsUrl = "https://thumpman-graffitti.github.io/pwa-test/songs_master.json";
-
-  const statsArea = document.getElementById("statsArea");
-  statsArea.innerHTML = "集計中...";
-
-  Promise.all([
-    fetch(masterUrl).then(res => res.json()),
-    fetch(songsUrl).then(res => res.json())
-  ]).then(([lives, songs]) => {
+  // 2. セレクトボックスの生成
+  function renderLiveSelect() {
+    const select = document.getElementById('liveSelect');
+    // 日付の新しい順に並び替えて表示
+    const sortedLives = [...lives].sort((a, b) => new Date(b.date) - new Date(a.date));
     
-    // 1. 全ライブのセトリを集計
-    let songCounter = {}; 
-    let lastInfo = {}; // { "曲ID": { date: "日付", tour: "ツアー" } }
-
-    // 日付順に並び替えてから集計（最新情報を保持するため）
-    lives.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-    lives.forEach(live => {
-      if (live.setlist && Array.isArray(live.setlist)) {
-        live.setlist.forEach(sid => {
-          const idStr = String(sid).padStart(3, '0');
-          songCounter[idStr] = (songCounter[idStr] || 0) + 1;
-          lastInfo[idStr] = { date: live.date, tour: live.tour };
-        });
-      }
+    sortedLives.forEach(live => {
+      const opt = document.createElement('option');
+      opt.value = live.id;
+      opt.textContent = `${live.date} ${live.title}`;
+      select.appendChild(opt);
     });
 
-    // 2. 曲マスタをベースに表示用データを作成
-    let stats = songs.map(song => {
-      // songs_master.json の ID プロパティ名をここで確実に補足する
-      const id = String(song.id || "").padStart(3, '0'); 
-      return {
-        id: id,
-        title: song.title || "無題",
-        count: songCounter[id] || 0,
-        lastDate: lastInfo[id] ? lastInfo[id].date : "-",
-        lastLive: lastInfo[id] ? lastInfo[id].tour : "-",
-        type: song.type === 's' ? '💿' : '🎸'
-      };
+    select.addEventListener('change', (e) => {
+      if (e.target.value) showSetlist(e.target.value);
+    });
+  }
+
+  // 3. セットリスト表示
+  function showSetlist(liveId) {
+    const live = lives.find(l => l.id === liveId);
+    const filteredSet = setlists.filter(s => s.live_id === liveId).sort((a, b) => a.order - b.order);
+    const area = document.getElementById('displayArea');
+
+    let html = `<h2>${live.title}</h2>`;
+    html += `<p>📅 ${live.date} 📍 ${live.venue}</p>`;
+    if(live.description) html += `<p style="font-size:0.9em; color:#666;">📝 ${live.description}</p>`;
+    html += `<hr><ul>`;
+
+    filteredSet.forEach(item => {
+      html += `<li>${item.order}. <strong>${item.song_title}</strong>${item.is_encore ? '<span class="encore"> (Encore)</span>' : ''}</li>`;
     });
 
-    // 3. 演奏回数順に並び替え
-    stats.sort((a, b) => b.count - a.count);
+    html += `</ul>`;
+    area.innerHTML = html;
+  }
 
-    // 4. HTML描画
-    let outputHtml = "";
-    stats.forEach((s, index) => {
-      if (s.count > 0) {
-        // IDとタイトルを安全に文字列化して関数に渡す
-        const safeId = s.id;
-        const safeTitle = s.title.replace(/'/g, "\\'");
+  // 4. ランキング表示
+  function showGlobalStats() {
+    const counts = {};
+    setlists.forEach(s => {
+      counts[s.song_id] = (counts[s.song_id] || 0) + 1;
+    });
 
-        outputHtml += `
-          <div style="border-bottom: 1px solid #ddd; padding: 10px 5px; cursor: pointer;" 
-               onclick="showSongHistory('${safeId}', '${safeTitle}')">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-              <div style="font-weight: bold; color: #007bff; text-decoration: underline;">
-                <span style="color: #888; text-decoration: none;">${index + 1}.</span>
-                ${s.type} ${s.title}
-              </div>
-              <div style="background: #e60012; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em;">
-                ${s.count}回
-              </div>
-            </div>
-            <div style="font-size: 0.8em; color: #666;">
-              📅 ${s.lastDate} / 🎤 ${s.lastLive}
-            </div>
-          </div>
-        `;
-      }
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    const area = document.getElementById('displayArea');
+
+    let html = `<h2>📊 全演奏曲ランキング</h2><p style="font-size:0.8em;">（曲名クリックで演奏履歴を表示）</p><ul>`;
+    
+    sorted.forEach(([songId, count]) => {
+      // songsMasterから曲情報を探す（IDが数値か文字列か曖昧な場合を考慮して比較）
+      const song = songsMaster.find(sm => String(sm.id).padStart(3, '0') === String(songId).padStart(3, '0'));
+      const title = song ? song.title : (setlists.find(s => s.song_id === songId)?.song_title || `Unknown ID:${songId}`);
+      
+      html += `<li onclick="showSongHistory('${songId}', '${title}')" style="cursor:pointer; color:#007bff; text-decoration:underline;">
+                ${title} (${count}回)
+              </li>`;
     });
     
-    statsArea.innerHTML = outputHtml || "演奏履歴が見つかりません。";
-
-  }).catch(err => {
-    console.error(err);
-    statsArea.innerHTML = "エラーが発生しました。JSONファイルを確認してください。";
-  });
-}
-
-// 未演奏曲（カウントが0の曲）を表示する関数
-function showUnplayedSongs() {
-  const masterUrl = "https://thumpman-graffitti.github.io/pwa-test/live_master.json";
-  const songsUrl = "https://thumpman-graffitti.github.io/pwa-test/songs_master.json";
-
-  const statsArea = document.getElementById("statsArea");
-  statsArea.innerHTML = "抽出中...";
-
-  Promise.all([
-    fetch(masterUrl).then(res => res.json()),
-    fetch(songsUrl).then(res => res.json())
-  ]).then(([lives, songs]) => {
-    
-    let playedSongIds = new Set(); 
-
-    // 1. 演奏されたことがある曲のIDをすべてSetに入れる
-    lives.forEach(live => {
-      if (live.setlist && Array.isArray(live.setlist)) {
-        live.setlist.forEach(songId => playedSongIds.add(songId));
-      }
-    });
-
-    // 2. 楽曲マスタのうち、演奏済みセットに含まれない曲だけを抽出
-    let unplayedSongs = songs.filter(song => !playedSongIds.has(song.id));
-
-    // 3. 表示エリアの描画
-    let outputHtml = "<h3 style='margin-top:0;'>🚫 未演奏の楽曲一覧</h3>";
-    outputHtml += `<p style='font-size:0.8em; color:#666;'>全 ${songs.length} 曲中、${unplayedSongs.length} 曲が未演奏です。</p>`;
-    
-    unplayedSongs.forEach((s) => {
-      outputHtml += `
-        <div style="border-bottom: 1px solid #ddd; padding: 8px 5px;">
-          <div style="font-weight: bold;">
-            ${s.type === 's' ? '💿' : '🎸'} ${s.title}
-          </div>
-          <div style="font-size: 0.8em; color: #888;">
-            初出: ${s.source || '-'} / アルバム: ${s.album || '-'}
-          </div>
-        </div>
-      `;
-    });
-    
-    if (unplayedSongs.length === 0) outputHtml = "なんと、全曲演奏済みです！🎉";
-    statsArea.innerHTML = outputHtml;
-
-  }).catch(err => {
-    console.error(err);
-    statsArea.innerHTML = "エラーが発生しました。";
-  });
-}  
-
-// 特定の曲の演奏履歴を一覧表示する関数（比較ロジック強化版）
-function showSongHistory(songId, songTitle) {
-  // もしIDが届いていなければエラーを表示して中断
-  if (!songId || songId === "undefined") {
-    alert("エラー: 曲のIDを正しく取得できませんでした。");
-    return;
+    html += `</ul>`;
+    area.innerHTML = html;
   }
 
-  const masterUrl = "https://thumpman-graffitti.github.io/pwa-test/live_master.json";
-  const statsArea = document.getElementById("statsArea");
-  statsArea.innerHTML = "検索中...";
+  // 5. 特定の曲の演奏履歴
+  function showSongHistory(songId, songTitle) {
+    const history = setlists.filter(s => String(s.song_id).padStart(3, '0') === String(songId).padStart(3, '0'));
+    const area = document.getElementById('displayArea');
 
-  fetch(masterUrl)
-    .then(res => res.json())
-    .then(lives => {
-      // 検索IDを3桁に正規化
-      const targetId = String(songId).padStart(3, '0');
-
-      const history = lives.filter(live => {
-        if (!live.setlist) return false;
-        // ライブデータのIDも3桁にして比較
-        return live.setlist.some(id => String(id).padStart(3, '0') === targetId);
-      });
-
-      let html = `<div style="margin-bottom: 15px; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
-                    <button onclick="showGlobalStats()" style="width: auto; padding: 5px 10px; background: #eee; margin-bottom:10px; border:1px solid #ccc;">← ランキングに戻る</button>
-                    <h3 style="margin: 0;">🎸 ${songTitle}</h3>
-                    <p style="font-size: 0.9em; margin: 5px 0;">演奏回数: ${history.length} 回</p>
-                  </div>`;
-
-      if (history.length > 0) {
-        history.forEach(live => {
-          html += `
-            <div style="border-bottom: 1px dotted #ccc; padding: 8px 0;">
-              <div style="font-weight: bold;">📅 ${live.date}</div>
-              <div style="font-size: 0.9em;">🎤 ${live.tour}</div>
-              <div style="font-size: 0.8em; color: #666;">📍 ${live.venue}</div>
-            </div>
-          `;
-        });
-      } else {
-        html += `<p style='color:red;'>履歴が見つかりませんでした。(ID: ${targetId})</p>`;
+    let html = `<h3>🎸 「${songTitle}」の演奏履歴</h3>`;
+    html += `<button onclick="showGlobalStats()" class="secondary-btn" style="width:auto; padding:5px 15px;">← ランキングに戻る</button><br><br>`;
+    
+    history.forEach(h => {
+      const live = lives.find(l => l.id === h.live_id);
+      if (live) {
+        html += `
+          <div class="live-card">
+            <div style="font-weight:bold;">📅 ${live.date}</div>
+            <div>🎤 ${live.title}</div>
+            <div style="font-size:0.8em; color:#666;">📍 ${live.venue} / ${h.is_encore ? 'アンコール' : '本編'}</div>
+          </div>`;
       }
-      statsArea.innerHTML = html;
-      statsArea.scrollTop = 0;
-    })
-    .catch(err => {
-      console.error(err);
-      statsArea.innerHTML = "データの取得に失敗しました。";
     });
-}
-  
+    area.innerHTML = html;
+  }
+
+  // 初期化実行
+  init();
+
+  // Service Worker登録
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').then(() => console.log('SW registered'));
+  }
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
