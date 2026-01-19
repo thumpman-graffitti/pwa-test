@@ -439,9 +439,9 @@
   },
   {
     "id": "074",
-    "title": "\"Hard Days",
-    "type": "z",
-    "album": "c"
+    "title": "Hard Days,Holy Night",
+    "type": "c",
+    "album": "愛が呼ぶほうへ"
   },
   {
     "id": "075",
@@ -451,13 +451,13 @@
   },
   {
     "id": "076",
-    "title": "\"Theme of \"\"74ers\"\"\"",
+    "title": "Theme of “74ers“",
     "type": "c",
     "album": "ラック"
   },
   {
     "id": "077",
-    "title": "\"Anotherday for \"\"74ers\"\"\"",
+    "title": "Anotherday for “74ers“",
     "type": "c",
     "album": "ラック"
   },
@@ -541,9 +541,9 @@
   },
   {
     "id": "091",
-    "title": "\"Twilight",
-    "type": "z",
-    "album": "a"
+    "title": "Twilight,トワイライト",
+    "type": "a",
+    "album": "THUMPχ"
   },
   {
     "id": "092",
@@ -685,9 +685,9 @@
   },
   {
     "id": "115",
-    "title": "\"m-NAVI 3 “Ready? Silvia",
-    "type": "z",
-    "album": "and Lily?”\""
+    "title": "m-NAVI 3 “Ready? Silvia, Geronimo, and Lily?”",
+    "type": "a",
+    "album": "m-CABI"
   },
   {
     "id": "116",
@@ -793,9 +793,9 @@
   },
   {
     "id": "133",
-    "title": "\"Please say yes",
-    "type": "s",
-    "album": "yes\""
+    "title": "Please say yes, yes, yes",
+    "type": "a",
+    "album": "ポルノグラフィティ"
   },
   {
     "id": "134",
@@ -859,21 +859,21 @@
   },
   {
     "id": "144",
-    "title": "\"Love",
-    "type": "a",
-    "album": "too\""
+    "title": "Love,too Death,too",
+    "type": "s",
+    "album": "Love,too Death,too"
   },
   {
     "id": "145",
     "title": "グッドニュース",
     "type": "c",
-    "album": "\"Love"
+    "album": "Love,too Death,too"
   },
   {
     "id": "146",
     "title": "Time or Distance",
     "type": "c",
-    "album": "\"Love"
+    "album": "Love,too Death,too"
   },
   {
     "id": "147",
@@ -1231,7 +1231,7 @@
   },
   {
     "id": "206",
-    "title": "ワン・ウーマン・ショー～甘い幻～",
+    "title": "ワン・ウーマン・ショー ～甘い幻～",
     "type": "s",
     "album": "ワン・ウーマン・ショー ～甘い幻～"
   },
