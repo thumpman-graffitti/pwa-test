@@ -27,7 +27,7 @@
 </head>
 <body>
 
-<h1>🎵 PG DB６</h1>
+<h1>🎵 PG DB７</h1>
 
 <div id="loader" class="loading">データを読み込み中...</div>
 
@@ -95,7 +95,8 @@
   }
 
 // 全演奏ランキング（順位・最新演奏情報付き）
-function showGlobalStats() {
+// 全演奏ランキング（順位・最新演奏情報付き）
+  function showGlobalStats() {
     const counts = {};
     const lastLiveMap = {};
 
@@ -122,10 +123,17 @@ function showGlobalStats() {
         return smId === String(songId).padStart(3, '0');
       });
 
-      // 曲名のお掃除ロジック：(c) や (s) などを削除
+      // --- 曲名のお掃除ロジックここから ---
       let title = song ? song.title : (setlists.find(s => s.song_id === songId)?.song_title || `ID:${songId}`);
-      title = title.replace(/\s*\([csas].*?\)?$/i, "").trim(); // 末尾の (c) や (s) 等を削除
       
+      title = title
+        .replace(/^"/, "")               // 先頭の " を削除
+        .replace(/"$/, "")               // 末尾の " を削除
+        .replace(/\s*\(.*?\)\s*$/, "")   // 末尾の (c) や (too") などのカッコ内を削除
+        .replace(/\s*[a-z]$/i, "")       // 末尾に残った一文字 (a や s など) を削除
+        .trim();                         // 前後の空白を削除
+      // --- お掃除ロジックここまで ---
+
       const lastLive = lastLiveMap[songId];
       
       html += `<li>
@@ -138,10 +146,9 @@ function showGlobalStats() {
   }
   
 
-// 未演奏曲一覧（アルバム名表示・50音順）
-function showUnplayedSongs() {
+// 未演奏の曲一覧（お掃除機能付き）
+  function showUnplayedSongs() {
     const playedSongIds = new Set(setlists.map(s => String(s.song_id).padStart(3, '0')));
-    
     const unplayed = songsMaster
       .filter(sm => {
         const smId = String(sm.ID || sm.id || sm.No || "").padStart(3, '0');
@@ -152,22 +159,18 @@ function showUnplayedSongs() {
     const area = document.getElementById('displayArea');
     let html = `<h2>🔕 未演奏の曲一覧 (${unplayed.length}曲)</h2><ul>`;
     
-    if (unplayed.length === 0) {
-      html += `<p>すべての曲が演奏済みです！</p>`;
-    } else {
-      unplayed.forEach(song => {
-        let title = song.title || "名称不明";
-        // 曲名のお掃除
-        title = title.replace(/\s*\([csas].*?\)?$/i, "").trim();
-        
-        const albumName = song.Album || song.CD || song.album || 'アルバム不明';
-        html += `<li>・${title} <span class="album-name">(${albumName})</span></li>`;
-      });
-    }
+    unplayed.forEach(song => {
+      let title = (song.title || "名称不明")
+        .replace(/^"/, "").replace(/"$/, "")
+        .replace(/\s*\(.*?\)\s*$/, "").replace(/\s*[a-z]$/i, "").trim();
+      
+      const albumName = song.Album || song.CD || song.album || 'アルバム不明';
+      html += `<li>・${title} <span class="album-name">(${albumName})</span></li>`;
+    });
     area.innerHTML = html + `</ul>`;
   }
 
-   function showSongHistory(songId, songTitle) {
+    function showSongHistory(songId, songTitle) {
     const history = setlists.filter(s => String(s.song_id).padStart(3, '0') === String(songId).padStart(3, '0'));
     const area = document.getElementById('displayArea');
     let html = `<h3>🎸 「${songTitle}」の演奏履歴</h3>`;
@@ -190,6 +193,7 @@ function showUnplayedSongs() {
 </script>
 </body>
 </html>
+
 
 
 
