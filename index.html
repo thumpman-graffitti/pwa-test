@@ -32,7 +32,7 @@
 </head>
 <body>
 
-<h1>🎵 PGDB6</h1>
+<h1>🎵 PGDB7</h1>
 
 <div id="loader" class="loading">データを読み込み中...</div>
 
@@ -190,6 +190,7 @@
   }
 
   // --- 都道府県マップ表示機能 ---
+
   function showPrefStats() {
     const area = document.getElementById('displayArea');
     
@@ -197,6 +198,7 @@
     const counts = {};
     lives.forEach(live => {
       let pref = (live.prefecture || "不明").trim();
+      // 名称を正規化
       if (pref !== "不明" && !pref.endsWith("都") && !pref.endsWith("道") && !pref.endsWith("府") && !pref.endsWith("県")) {
           if (pref === "東京") pref = "東京都";
           else if (pref === "大阪" || pref === "京都") pref += "府";
@@ -206,51 +208,39 @@
       counts[pref] = (counts[pref] || 0) + 1;
     });
 
-    // 2. 表示エリアの作成（高さをしっかり確保）
+    const maxCount = Math.max(...Object.values(counts), 1);
+
+    // 2. 表示エリアの作成（地図＋ランキング）
     area.innerHTML = `
       <h2>🗾 都道府県別ライブマップ</h2>
-      <div id="map-canvas" style="width:100%; min-height:400px; margin:20px 0; background:#fff; display:flex; justify-content:center; align-items:center; border:1px solid #eee; border-radius:8px;">
-        <div id="jmap"></div>
+      <div id="map-canvas" style="width:100%; max-width:500px; margin:auto; background:#fff; padding:10px;">
+        <svg viewBox="0 0 500 450" style="width:100%; height:auto;">
+          <rect x="20" y="380" width="40" height="40" rx="5" fill="${getPrefColor('沖縄県', counts, maxCount)}" onclick="showPrefHistory('沖縄県')" style="cursor:pointer" />
+          <rect x="80" y="330" width="40" height="40" rx="5" fill="${getPrefColor('福岡県', counts, maxCount)}" onclick="showPrefHistory('福岡県')" style="cursor:pointer" />
+          <rect x="35" y="330" width="40" height="40" rx="5" fill="${getPrefColor('長崎県', counts, maxCount)}" onclick="showPrefHistory('長崎県')" style="cursor:pointer" />
+          <rect x="180" y="330" width="40" height="40" rx="5" fill="${getPrefColor('愛媛県', counts, maxCount)}" onclick="showPrefHistory('愛媛県')" style="cursor:pointer" />
+          <rect x="225" y="330" width="40" height="40" rx="5" fill="${getPrefColor('香川県', counts, maxCount)}" onclick="showPrefHistory('香川県')" style="cursor:pointer" />
+          <rect x="130" y="285" width="45" height="40" rx="5" fill="${getPrefColor('広島県', counts, maxCount)}" onclick="showPrefHistory('広島県')" style="cursor:pointer" />
+          <rect x="80" y="285" width="45" height="40" rx="5" fill="${getPrefColor('山口県', counts, maxCount)}" onclick="showPrefHistory('山口県')" style="cursor:pointer" />
+          <rect x="225" y="285" width="45" height="40" rx="5" fill="${getPrefColor('大阪府', counts, maxCount)}" onclick="showPrefHistory('大阪府')" style="cursor:pointer" />
+          <rect x="275" y="285" width="45" height="40" rx="5" fill="${getPrefColor('京都府', counts, maxCount)}" onclick="showPrefHistory('京都府')" style="cursor:pointer" />
+          <rect x="325" y="240" width="45" height="40" rx="5" fill="${getPrefColor('愛知県', counts, maxCount)}" onclick="showPrefHistory('愛知県')" style="cursor:pointer" />
+          <rect x="375" y="240" width="45" height="40" rx="5" fill="${getPrefColor('東京都', counts, maxCount)}" onclick="showPrefHistory('東京都')" style="cursor:pointer" />
+          <rect x="375" y="195" width="45" height="40" rx="5" fill="${getPrefColor('埼玉県', counts, maxCount)}" onclick="showPrefHistory('埼玉県')" style="cursor:pointer" />
+          <rect x="375" y="100" width="50" height="40" rx="5" fill="${getPrefColor('宮城県', counts, maxCount)}" onclick="showPrefHistory('宮城県')" style="cursor:pointer" />
+          <rect x="375" y="10" width="60" height="50" rx="5" fill="${getPrefColor('北海道', counts, maxCount)}" onclick="showPrefHistory('北海道')" style="cursor:pointer" />
+          
+          <text x="30" y="440" font-size="12">沖縄</text>
+          <text x="135" y="310" fill="white" font-size="10" pointer-events="none">広島</text>
+          <text x="380" y="265" fill="white" font-size="10" pointer-events="none">東京</text>
+          <text x="380" y="40" fill="white" font-size="10" pointer-events="none">北海道</text>
+        </svg>
+        <p style="font-size:0.7em; color:#999; text-align:center;">※主要都市を表示（パネルをクリックで詳細へ）</p>
       </div>
       <div id="prefList"></div>
     `;
 
-    // 3. 地図描画ロジック（描画の「空振り」を防ぐための2段階待ち）
-    const attemptMapRender = () => {
-      const target = document.getElementById('jmap');
-      if (target && typeof jQuery !== "undefined" && jQuery.fn.japanMap) {
-        const maxCount = Math.max(...Object.values(counts), 1);
-        const prefList = ["北海道","青森県","岩手県","宮城県","秋田県","山形県","福島県","茨城県","栃木県","群馬県","埼玉県","千葉県","東京都","神奈川県","新潟県","富山県","石川県","福井県","山梨県","長野県","岐阜県","静岡県","愛知県","三重県","滋賀県","京都府","大阪府","兵庫県","奈良県","和歌山県","鳥取県","島根県","岡山県","広島県","山口県","徳島県","香川県","愛媛県","高知県","福岡県","佐賀県","長崎県","熊本県","大分県","宮崎県","鹿児島県","沖縄県"];
-
-        $(target).empty().japanMap({
-          width: 500,
-          selection: "prefecture",
-          areas: prefList.map((name, index) => {
-            const count = counts[name] || 0;
-            const alpha = count > 0 ? (count / maxCount) * 0.8 + 0.2 : 0;
-            return {
-              code: index + 1,
-              name: name,
-              color: count > 0 ? `rgba(0, 123, 255, ${alpha})` : "#eeeeee",
-              hoverColor: "#ffc107"
-            };
-          }),
-          onSelect: function(data) {
-            showPrefHistory(data.name);
-          }
-        });
-      } else {
-        // まだ要素の準備ができていなければ少し待って再試行
-        setTimeout(attemptMapRender, 100);
-      }
-    };
-
-    // 画面の更新（レンダリング）が走るのを待ってから開始
-    requestAnimationFrame(() => {
-      setTimeout(attemptMapRender, 50);
-    });
-
-    // 4. ランキングリスト表示
+    // 3. ランキングリスト表示
     const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
     let html = `<ul style="margin-top:20px;">`;
     let rank = 1;
@@ -262,6 +252,13 @@
     document.getElementById('prefList').innerHTML = html + `</ul>`;
   }
 
+  // 色計算用の補助関数
+  function getPrefColor(name, counts, max) {
+    const count = counts[name] || 0;
+    if (count === 0) return "#eeeeee";
+    const alpha = (count / max) * 0.7 + 0.3;
+    return `rgba(0, 123, 255, ${alpha})`;
+  }
 
 
   init();
