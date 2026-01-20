@@ -28,7 +28,7 @@
   { "live_id": "0002", "song_id": "001", "order": 13, "song_title": "アポロ", "is_encore": false },
   { "live_id": "0002", "song_id": "009", "order": 14, "song_title": "Heart Beat", "is_encore": false },
   { "live_id": "0002", "song_id": "002", "order": 15, "song_title": "ロマンチスト・エゴイスト", "is_encore": true },
-  { "live_id": "0002", "song_id": "004", "order": 16, "song_title": "ジレンマ", "is_encore": true }
+  { "live_id": "0002", "song_id": "004", "order": 16, "song_title": "ジレンマ", "is_encore": true },
   { "live_id": "0003", "song_id": "005", "order": 1, "song_title": "Jazz up", "is_encore": false },
   { "live_id": "0003", "song_id": "010", "order": 2, "song_title": "マシンガントーク", "is_encore": false },
   { "live_id": "0003", "song_id": "003", "order": 3, "song_title": "ヒトリノ夜", "is_encore": false },
@@ -44,7 +44,7 @@
   { "live_id": "0003", "song_id": "001", "order": 13, "song_title": "アポロ", "is_encore": false },
   { "live_id": "0003", "song_id": "009", "order": 14, "song_title": "Heart Beat", "is_encore": false },
   { "live_id": "0003", "song_id": "002", "order": 15, "song_title": "ロマンチスト・エゴイスト", "is_encore": true },
-  { "live_id": "0003", "song_id": "004", "order": 16, "song_title": "ジレンマ", "is_encore": true }
+  { "live_id": "0003", "song_id": "004", "order": 16, "song_title": "ジレンマ", "is_encore": true },
   { "live_id": "0004", "song_id": "005", "order": 1, "song_title": "Jazz up", "is_encore": false },
   { "live_id": "0004", "song_id": "010", "order": 2, "song_title": "マシンガントーク", "is_encore": false },
   { "live_id": "0004", "song_id": "003", "order": 3, "song_title": "ヒトリノ夜", "is_encore": false },
@@ -60,7 +60,7 @@
   { "live_id": "0004", "song_id": "001", "order": 13, "song_title": "アポロ", "is_encore": false },
   { "live_id": "0004", "song_id": "009", "order": 14, "song_title": "Heart Beat", "is_encore": false },
   { "live_id": "0004", "song_id": "002", "order": 15, "song_title": "ロマンチスト・エゴイスト", "is_encore": true },
-  { "live_id": "0004", "song_id": "004", "order": 16, "song_title": "ジレンマ", "is_encore": true }
+  { "live_id": "0004", "song_id": "004", "order": 16, "song_title": "ジレンマ", "is_encore": true },
   { "live_id": "0005", "song_id": "005", "order": 1, "song_title": "Jazz up", "is_encore": false },
   { "live_id": "0005", "song_id": "010", "order": 2, "song_title": "マシンガントーク", "is_encore": false },
   { "live_id": "0005", "song_id": "003", "order": 3, "song_title": "ヒトリノ夜", "is_encore": false },
@@ -76,7 +76,7 @@
   { "live_id": "0005", "song_id": "001", "order": 13, "song_title": "アポロ", "is_encore": false },
   { "live_id": "0005", "song_id": "009", "order": 14, "song_title": "Heart Beat", "is_encore": false },
   { "live_id": "0005", "song_id": "002", "order": 15, "song_title": "ロマンチスト・エゴイスト", "is_encore": true },
-  { "live_id": "0005", "song_id": "004", "order": 16, "song_title": "ジレンマ", "is_encore": true }
+  { "live_id": "0005", "song_id": "004", "order": 16, "song_title": "ジレンマ", "is_encore": true },
   { "live_id": "0006", "song_id": "005", "order": 1, "song_title": "Jazz up", "is_encore": false },
   { "live_id": "0006", "song_id": "010", "order": 2, "song_title": "マシンガントーク", "is_encore": false },
   { "live_id": "0006", "song_id": "003", "order": 3, "song_title": "ヒトリノ夜", "is_encore": false },
@@ -92,7 +92,7 @@
   { "live_id": "0006", "song_id": "001", "order": 13, "song_title": "アポロ", "is_encore": false },
   { "live_id": "0006", "song_id": "009", "order": 14, "song_title": "Heart Beat", "is_encore": false },
   { "live_id": "0006", "song_id": "002", "order": 15, "song_title": "ロマンチスト・エゴイスト", "is_encore": true },
-  { "live_id": "0006", "song_id": "004", "order": 16, "song_title": "ジレンマ", "is_encore": true }
+  { "live_id": "0006", "song_id": "004", "order": 16, "song_title": "ジレンマ", "is_encore": true },
   { "live_id": "0007", "song_id": "005", "order": 1, "song_title": "Jazz up", "is_encore": false },
   { "live_id": "0007", "song_id": "010", "order": 2, "song_title": "マシンガントーク", "is_encore": false },
   { "live_id": "0007", "song_id": "003", "order": 3, "song_title": "ヒトリノ夜", "is_encore": false },
@@ -108,7 +108,7 @@
   { "live_id": "0007", "song_id": "001", "order": 13, "song_title": "アポロ", "is_encore": false },
   { "live_id": "0007", "song_id": "009", "order": 14, "song_title": "Heart Beat", "is_encore": false },
   { "live_id": "0007", "song_id": "002", "order": 15, "song_title": "ロマンチスト・エゴイスト", "is_encore": true },
-  { "live_id": "0007", "song_id": "004", "order": 16, "song_title": "ジレンマ", "is_encore": true }
+  { "live_id": "0007", "song_id": "004", "order": 16, "song_title": "ジレンマ", "is_encore": true },
   { "live_id": "0008", "song_id": "005", "order": 1, "song_title": "Jazz up", "is_encore": false },
   { "live_id": "0008", "song_id": "010", "order": 2, "song_title": "マシンガントーク", "is_encore": false },
   { "live_id": "0008", "song_id": "003", "order": 3, "song_title": "ヒトリノ夜", "is_encore": false },
@@ -124,7 +124,7 @@
   { "live_id": "0008", "song_id": "001", "order": 13, "song_title": "アポロ", "is_encore": false },
   { "live_id": "0008", "song_id": "009", "order": 14, "song_title": "Heart Beat", "is_encore": false },
   { "live_id": "0008", "song_id": "002", "order": 15, "song_title": "ロマンチスト・エゴイスト", "is_encore": true },
-  { "live_id": "0008", "song_id": "004", "order": 16, "song_title": "ジレンマ", "is_encore": true }
+  { "live_id": "0008", "song_id": "004", "order": 16, "song_title": "ジレンマ", "is_encore": true },
   { "live_id": "0009", "song_id": "005", "order": 1, "song_title": "Jazz up", "is_encore": false },
   { "live_id": "0009", "song_id": "010", "order": 2, "song_title": "マシンガントーク", "is_encore": false },
   { "live_id": "0009", "song_id": "003", "order": 3, "song_title": "ヒトリノ夜", "is_encore": false },
@@ -140,7 +140,7 @@
   { "live_id": "0009", "song_id": "001", "order": 13, "song_title": "アポロ", "is_encore": false },
   { "live_id": "0009", "song_id": "009", "order": 14, "song_title": "Heart Beat", "is_encore": false },
   { "live_id": "0009", "song_id": "002", "order": 15, "song_title": "ロマンチスト・エゴイスト", "is_encore": true },
-  { "live_id": "0009", "song_id": "004", "order": 16, "song_title": "ジレンマ", "is_encore": true }
+  { "live_id": "0009", "song_id": "004", "order": 16, "song_title": "ジレンマ", "is_encore": true },
   { "live_id": "0010", "song_id": "005", "order": 1, "song_title": "Jazz up", "is_encore": false },
   { "live_id": "0010", "song_id": "010", "order": 2, "song_title": "マシンガントーク", "is_encore": false },
   { "live_id": "0010", "song_id": "003", "order": 3, "song_title": "ヒトリノ夜", "is_encore": false },
@@ -156,7 +156,7 @@
   { "live_id": "0010", "song_id": "001", "order": 13, "song_title": "アポロ", "is_encore": false },
   { "live_id": "0010", "song_id": "009", "order": 14, "song_title": "Heart Beat", "is_encore": false },
   { "live_id": "0010", "song_id": "002", "order": 15, "song_title": "ロマンチスト・エゴイスト", "is_encore": true },
-  { "live_id": "0010", "song_id": "004", "order": 16, "song_title": "ジレンマ", "is_encore": true }
+  { "live_id": "0010", "song_id": "004", "order": 16, "song_title": "ジレンマ", "is_encore": true },
   { "live_id": "0011", "song_id": "005", "order": 1, "song_title": "Jazz up", "is_encore": false },
   { "live_id": "0011", "song_id": "010", "order": 2, "song_title": "マシンガントーク", "is_encore": false },
   { "live_id": "0011", "song_id": "003", "order": 3, "song_title": "ヒトリノ夜", "is_encore": false },
@@ -172,7 +172,7 @@
   { "live_id": "0011", "song_id": "001", "order": 13, "song_title": "アポロ", "is_encore": false },
   { "live_id": "0011", "song_id": "009", "order": 14, "song_title": "Heart Beat", "is_encore": false },
   { "live_id": "0011", "song_id": "002", "order": 15, "song_title": "ロマンチスト・エゴイスト", "is_encore": true },
-  { "live_id": "0011", "song_id": "004", "order": 16, "song_title": "ジレンマ", "is_encore": true }
+  { "live_id": "0011", "song_id": "004", "order": 16, "song_title": "ジレンマ", "is_encore": true },
   { "live_id": "0012", "song_id": "005", "order": 1, "song_title": "Jazz up", "is_encore": false },
   { "live_id": "0012", "song_id": "010", "order": 2, "song_title": "マシンガントーク", "is_encore": false },
   { "live_id": "0012", "song_id": "003", "order": 3, "song_title": "ヒトリノ夜", "is_encore": false },
@@ -188,7 +188,7 @@
   { "live_id": "0012", "song_id": "001", "order": 13, "song_title": "アポロ", "is_encore": false },
   { "live_id": "0012", "song_id": "009", "order": 14, "song_title": "Heart Beat", "is_encore": false },
   { "live_id": "0012", "song_id": "002", "order": 15, "song_title": "ロマンチスト・エゴイスト", "is_encore": true },
-  { "live_id": "0012", "song_id": "004", "order": 16, "song_title": "ジレンマ", "is_encore": true }
+  { "live_id": "0012", "song_id": "004", "order": 16, "song_title": "ジレンマ", "is_encore": true },
   { "live_id": "0013", "song_id": "005", "order": 1, "song_title": "Jazz up", "is_encore": false },
   { "live_id": "0013", "song_id": "010", "order": 2, "song_title": "マシンガントーク", "is_encore": false },
   { "live_id": "0013", "song_id": "003", "order": 3, "song_title": "ヒトリノ夜", "is_encore": false },
