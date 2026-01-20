@@ -27,7 +27,7 @@
 </head>
 <body>
 
-<h1>🎵 PG DB８</h1>
+<h1>🎵 PG DB9</h1>
 
 <div id="loader" class="loading">データを読み込み中...</div>
 
@@ -39,6 +39,7 @@
 
   <button onclick="showGlobalStats()" class="secondary-btn">📊 全演奏曲ランキングを表示</button>
   <button onclick="showUnplayedSongs()" class="tertiary-btn">🔕 未演奏の曲一覧を表示</button>
+　<button onclick="showPrefStats()" class="secondary-btn">🗾 都道府県別ランキングを表示</button>
 
   <div id="displayArea" class="stats-container">
     <p>メニューから操作を選択してください。</p>
@@ -189,6 +190,70 @@
     });
     area.innerHTML = html;
   }
+
+  // 3. 都道府県ランキング表示
+  function showPrefStats() {
+    const counts = {};
+
+    lives.forEach(live => {
+      const pref = live.prefecture || "不明";
+      counts[pref] = (counts[pref] || 0) + 1;
+    });
+
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    const area = document.getElementById('displayArea');
+    
+    let html = `<h2>🗾 都道府県別 開催ランキング</h2><ul>`;
+    
+    let rank = 1;
+    sorted.forEach(([pref, count], index) => {
+      if (index > 0 && count < sorted[index - 1][1]) rank = index + 1;
+      
+      html += `
+        <li onclick="showPrefHistory('${pref}')" style="cursor:pointer; color:#007bff; text-decoration:underline;">
+          <span class="rank-num">${rank}位</span>
+          <strong>${pref}</strong> (${count}回)
+        </li>`;
+    });
+    
+    area.innerHTML = html + `</ul>`;
+  }
+
+  // 都道府県ごとの開催履歴表示
+  function showPrefHistory(prefName) {
+    const history = lives.filter(l => l.prefecture === prefName)
+                         .sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    const area = document.getElementById('displayArea');
+    let html = `<h3>📍 ${prefName} での開催履歴</h3>`;
+    html += `<button onclick="showPrefStats()" class="secondary-btn" style="width:auto; padding:5px 15px;">← ランキングに戻る</button><br><br>`;
+    
+    history.forEach(live => {
+      html += `
+        <div class="live-card">
+          <b>📅 ${live.date}</b><br>
+          🎤 ${live.title}<br>
+          <small>📍 ${live.venue}</small>
+        </div>`;
+    });
+    area.innerHTML = html;
+  }
+
+  // 既存の showSetlist もID比較を安全に修正
+  function showSetlist(liveId) {
+    // 4桁に揃えて比較
+    const targetLiveId = String(liveId).padStart(4, '0');
+    const live = lives.find(l => String(l.id).padStart(4, '0') === targetLiveId);
+    const filteredSet = setlists.filter(s => String(s.live_id).padStart(4, '0') === targetLiveId).sort((a, b) => a.order - b.order);
+    
+    const area = document.getElementById('displayArea');
+    let html = `<h2>${live.title}</h2><p>📅 ${live.date} 📍 ${live.venue}</p><hr><ul>`;
+    filteredSet.forEach(item => {
+      html += `<li>${item.order}. <strong>${item.song_title}</strong>${item.is_encore ? '<span class="encore">(Encore)</span>' : ''}</li>`;
+    });
+    area.innerHTML = html + `</ul>`;
+  }
+
 
   init();
 </script>
