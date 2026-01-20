@@ -53,24 +53,30 @@
 
   async function init() {
     try {
+      console.log("Fetching data...");
       const [resLives, resSets, resSongs] = await Promise.all([
-        fetch('lives.json'),
-        fetch('setlists.json'),
-        fetch('songs_master.json')
+        fetch('lives.json').then(r => { if(!r.ok) throw new Error('lives.json not found'); return r.json(); }),
+        fetch('setlists.json').then(r => { if(!r.ok) throw new Error('setlists.json not found'); return r.json(); }),
+        fetch('songs_master.json').then(r => { if(!r.ok) throw new Error('songs_master.json not found'); return r.json(); })
       ]);
 
-      lives = await resLives.json();
-      setlists = await resSets.json();
-      songsMaster = await resSongs.json();
+      lives = resLives;
+      setlists = resSets;
+      songsMaster = resSongs;
 
+      console.log("Data loaded successfully");
       renderLiveSelect();
       document.getElementById('loader').style.display = 'none';
       document.getElementById('app-ui').style.display = 'block';
     } catch (error) {
-      document.getElementById('loader').innerHTML = `<p style="color:red;">データの読み込みに失敗しました。</p>`;
-      console.error(error);
+      console.error("Load Error:", error);
+      document.getElementById('loader').innerHTML = 
+        `<p style="color:red; font-weight:bold;">データの読み込みに失敗しました</p>
+         <p style="font-size:0.8em; color:#666;">理由: ${error.message}<br>
+         ブラウザの「検証(F12)」→「コンソール」を見ると詳細なエラーがわかります。</p>`;
     }
   }
+
 
   function renderLiveSelect() {
     const select = document.getElementById('liveSelect');
