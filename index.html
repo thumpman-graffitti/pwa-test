@@ -7,6 +7,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="PG Live Log" />
   <title>PG Live Log</title>
+  <script src="https://unpkg.com/jquery@3.6.0/dist/jquery.min.js"></script>
+  <script src="https://unpkg.com/japanmap@1.0.2/jquery.japanmap.min.js"></script>
   <style>
     body { font-family: sans-serif; padding: 20px; line-height: 1.6; max-width: 800px; margin: auto; }
     input, select, button { display: block; width: 100%; margin-bottom: 10px; padding: 12px; box-sizing: border-box; border-radius: 5px; border: 1px solid #ccc; font-size: 16px; }
@@ -24,11 +26,13 @@
     .song-title { color: #007bff; text-decoration: underline; cursor: pointer; font-weight: bold; }
     .album-name { font-size: 0.8em; color: #666; margin-left: 5px; }
     label { font-size: 0.9em; color: #555; font-weight: bold; display: block; margin-bottom: 5px; }
+    /* 地図用のスタイル */
+    #map-canvas { background: white; border-radius: 8px; margin-bottom: 20px; padding: 10px; display: flex; justify-content: center; }
   </style>
 </head>
 <body>
 
-<h1>🎵 PGDB</h1>
+<h1>🎵 PGDB2</h1>
 
 <div id="loader" class="loading">データを読み込み中...</div>
 
@@ -45,7 +49,7 @@
 
   <button onclick="showGlobalStats()" class="secondary-btn">📊 全演奏曲ランキングを表示</button>
   <button onclick="showUnplayedSongs()" class="tertiary-btn">🔕 未演奏の曲一覧を表示</button>
-　<button onclick="showPrefStats()" class="secondary-btn">🗾 都道府県別ランキングを表示</button>
+  <button onclick="showPrefStats()" class="secondary-btn">🗾 都道府県別マップ・ランキング</button>
 
   <div id="displayArea" class="stats-container">
     <p>メニューから操作を選択してください。</p>
@@ -84,57 +88,35 @@
     }
   }
 
-  // ツアー選択肢を生成（日付の降順）
   function renderTourSelect() {
     const tourSelect = document.getElementById('tourSelect');
-    
-    // ツアーごとに最新の日付を記録
     const tourMap = new Map();
     lives.forEach(live => {
       if (!tourMap.has(live.title) || new Date(live.date) > new Date(tourMap.get(live.title))) {
         tourMap.set(live.title, live.date);
       }
     });
-
-    // 最新日付が新しい順にツアータイトルをソート
-    const sortedTours = Array.from(tourMap.keys()).sort((a, b) => {
-      return new Date(tourMap.get(b)) - new Date(tourMap.get(a));
-    });
-
+    const sortedTours = Array.from(tourMap.keys()).sort((a, b) => new Date(tourMap.get(b)) - new Date(tourMap.get(a)));
     sortedTours.forEach(title => {
       const opt = document.createElement('option');
       opt.value = title;
       opt.textContent = title;
       tourSelect.appendChild(opt);
     });
-
-    // ツアーが選ばれたら公演日リストを更新
-    tourSelect.addEventListener('change', (e) => {
-      renderLiveSelect(e.target.value);
-    });
+    tourSelect.addEventListener('change', (e) => { renderLiveSelect(e.target.value); });
   }
 
-  // 公演日選択肢を生成（日付の降順）
   function renderLiveSelect(selectedTitle) {
     const liveSelect = document.getElementById('liveSelect');
     liveSelect.innerHTML = '<option value="">-- 公演日を選択 --</option>';
-    
-    if (!selectedTitle) {
-      liveSelect.disabled = true;
-      return;
-    }
-
-    const filteredLives = lives
-      .filter(l => l.title === selectedTitle)
-      .sort((a, b) => new Date(b.date) - new Date(a.date));
-
+    if (!selectedTitle) { liveSelect.disabled = true; return; }
+    const filteredLives = lives.filter(l => l.title === selectedTitle).sort((a, b) => new Date(b.date) - new Date(a.date));
     filteredLives.forEach(live => {
       const opt = document.createElement('option');
       opt.value = live.id;
       opt.textContent = `${live.date} 【${live.venue}】`;
       liveSelect.appendChild(opt);
     });
-
     liveSelect.disabled = false;
     liveSelect.onchange = (e) => { if (e.target.value) showSetlist(e.target.value); };
   }
@@ -143,7 +125,6 @@
     const targetLiveId = String(liveId).padStart(4, '0');
     const live = lives.find(l => String(l.id).padStart(4, '0') === targetLiveId);
     const filteredSet = setlists.filter(s => String(s.live_id).padStart(4, '0') === targetLiveId).sort((a, b) => a.order - b.order);
-    
     const area = document.getElementById('displayArea');
     let html = `<h2>${live.title}</h2><p>📅 ${live.date} 📍 ${live.venue}</p><hr><ul>`;
     if (filteredSet.length === 0) html += `<p>セットリストが登録されていません。</p>`;
@@ -153,11 +134,9 @@
     area.innerHTML = html + `</ul>`;
   }
 
-  // 全演奏ランキング
   function showGlobalStats() {
     const counts = {};
     const lastLiveMap = {};
-
     setlists.forEach(s => {
       counts[s.song_id] = (counts[s.song_id] || 0) + 1;
       const currentLive = lives.find(l => String(l.id).padStart(4, '0') === String(s.live_id).padStart(4, '0'));
@@ -167,92 +146,98 @@
         }
       }
     });
-
     const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
     const area = document.getElementById('displayArea');
     let html = `<h2>📊 全演奏曲ランキング</h2><ul>`;
-    
     let rank = 1;
     sorted.forEach(([songId, count], index) => {
       if (index > 0 && count < sorted[index - 1][1]) rank = index + 1;
       const song = songsMaster.find(sm => String(sm.id).padStart(3, '0') === String(songId).padStart(3, '0'));
       let title = song ? song.title : (setlists.find(s => s.song_id === songId)?.song_title || `ID:${songId}`);
       title = title.replace(/^"/g, "").split('(')[0].split('（')[0].trim();
-
       const lastLive = lastLiveMap[songId];
-      html += `<li>
-                <span class="rank-num">${rank}位</span>
-                <span class="song-title" onclick="showSongHistory('${songId}', '${title.replace(/'/g, "\\'")}')">${title}</span> (${count}回)
-                ${lastLive ? `<span class="last-played">最終演奏: ${lastLive.date} 「${lastLive.title}」</span>` : ''}
-              </li>`;
+      html += `<li><span class="rank-num">${rank}位</span><span class="song-title" onclick="showSongHistory('${songId}', '${title.replace(/'/g, "\\'")}')">${title}</span> (${count}回)${lastLive ? `<span class="last-played">最終演奏: ${lastLive.date} 「${lastLive.title}」</span>` : ''}</li>`;
     });
     area.innerHTML = html + `</ul>`;
   }
 
-  // 未演奏曲一覧
   function showUnplayedSongs() {
     const playedSongIds = new Set(setlists.map(s => String(s.song_id).padStart(3, '0')));
-    const unplayed = songsMaster
-      .filter(sm => !playedSongIds.has(String(sm.id).padStart(3, '0')))
-      .sort((a, b) => (a.title || "").localeCompare(b.title || "", 'ja'));
-
+    const unplayed = songsMaster.filter(sm => !playedSongIds.has(String(sm.id).padStart(3, '0'))).sort((a, b) => (a.title || "").localeCompare(b.title || "", 'ja'));
     const area = document.getElementById('displayArea');
     let html = `<h2>🔕 未演奏の曲一覧 (${unplayed.length}曲)</h2><ul>`;
-    if (unplayed.length === 0) {
-      html += `<p>すべての曲が演奏済みです！</p>`;
-    } else {
-      unplayed.forEach(song => {
+    if (unplayed.length === 0) { html += `<p>すべての曲が演奏済みです！</p>`; } 
+    else { unplayed.forEach(song => {
         let title = (song.title || "名称不明").replace(/^"/g, "").split('(')[0].split('（')[0].trim();
         html += `<li>・${title} <span class="album-name">(${song.album || '不明'})</span></li>`;
-      });
-    }
+    }); }
     area.innerHTML = html + `</ul>`;
   }
 
-  // 楽曲演奏履歴
   function showSongHistory(songId, songTitle) {
     const history = setlists.filter(s => String(s.song_id).padStart(3, '0') === String(songId).padStart(3, '0'));
     const area = document.getElementById('displayArea');
-    let html = `<h3>🎸 「${songTitle}」の演奏履歴</h3>`;
-    html += `<button onclick="showGlobalStats()" class="secondary-btn" style="width:auto; padding:5px 15px;">← ランキングに戻る</button><br><br>`;
-    
+    let html = `<h3>🎸 「${songTitle}」の演奏履歴</h3><button onclick="showGlobalStats()" class="secondary-btn" style="width:auto; padding:5px 15px;">← ランキングに戻る</button><br><br>`;
     history.sort((a,b) => {
       const liveA = lives.find(l => String(l.id).padStart(4, '0') === String(a.live_id).padStart(4, '0'));
       const liveB = lives.find(l => String(l.id).padStart(4, '0') === String(b.live_id).padStart(4, '0'));
       return new Date(liveB.date) - new Date(liveA.date);
     }).forEach(h => {
       const live = lives.find(l => String(l.id).padStart(4, '0') === String(h.live_id).padStart(4, '0'));
-      if (live) {
-        html += `<div class="live-card"><b>📅 ${live.date}</b><br>🎤 ${live.title}<br><small>📍 ${live.venue}</small></div>`;
-      }
+      if (live) { html += `<div class="live-card"><b>📅 ${live.date}</b><br>🎤 ${live.title}<br><small>📍 ${live.venue}</small></div>`; }
     });
     area.innerHTML = html;
   }
 
-  // 都道府県別
+  // --- 都道府県マップ表示機能 ---
   function showPrefStats() {
     const counts = {};
     lives.forEach(live => {
       const pref = live.prefecture || "不明";
       counts[pref] = (counts[pref] || 0) + 1;
     });
-    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+
     const area = document.getElementById('displayArea');
-    let html = `<h2>🗾 都道府県別 開催ランキング</h2><ul>`;
+    area.innerHTML = `<h2>🗾 都道府県別ライブマップ</h2><div id="map-canvas"><div id="jmap"></div></div><div id="prefList"></div>`;
+
+    // マップ表示設定
+    const maxCount = Math.max(...Object.values(counts));
+    const prefList = ["北海道","青森県","岩手県","宮城県","秋田県","山形県","福島県","茨城県","栃木県","群馬県","埼玉県","千葉県","東京都","神奈川県","新潟県","富山県","石川県","福井県","山梨県","長野県","岐阜県","静岡県","愛知県","三重県","滋賀県","京都府","大阪府","兵庫県","奈良県","和歌山県","鳥取県","島根県","岡山県","広島県","山口県","徳島県","香川県","愛媛県","高知県","福岡県","佐賀県","長崎県","熊本県","大分県","宮崎県","鹿児島県","沖縄県"];
+
+    $("#jmap").japanMap({
+      width: 500,
+      selection: "prefecture",
+      areas: prefList.map((name, index) => {
+        const count = counts[name] || 0;
+        const alpha = count > 0 ? (count / maxCount) * 0.8 + 0.2 : 0; // 0回は透明、1回以上は濃淡
+        return {
+          code: index + 1,
+          name: name,
+          color: count > 0 ? `rgba(0, 123, 255, ${alpha})` : "#eeeeee",
+          hoverColor: "#ffc107"
+        };
+      }),
+      onSelect: function(data) {
+        showPrefHistory(data.name);
+      }
+    });
+
+    // リスト部分の生成
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    let html = `<ul style="margin-top:20px;">`;
     let rank = 1;
     sorted.forEach(([pref, count], index) => {
       if (index > 0 && count < sorted[index - 1][1]) rank = index + 1;
       html += `<li onclick="showPrefHistory('${pref}')" style="cursor:pointer; color:#007bff; text-decoration:underline;">
                 <span class="rank-num">${rank}位</span><strong>${pref}</strong> (${count}回)</li>`;
     });
-    area.innerHTML = html + `</ul>`;
+    document.getElementById('prefList').innerHTML = html + `</ul>`;
   }
 
   function showPrefHistory(prefName) {
     const history = lives.filter(l => l.prefecture === prefName).sort((a, b) => new Date(b.date) - new Date(a.date));
     const area = document.getElementById('displayArea');
-    let html = `<h3>📍 ${prefName} での開催履歴</h3>`;
-    html += `<button onclick="showPrefStats()" class="secondary-btn" style="width:auto; padding:5px 15px;">← ランキングに戻る</button><br><br>`;
+    let html = `<h3>📍 ${prefName} での開催履歴</h3><button onclick="showPrefStats()" class="secondary-btn" style="width:auto; padding:5px 15px;">← マップに戻る</button><br><br>`;
     history.forEach(live => {
       html += `<div class="live-card"><b>📅 ${live.date}</b><br>🎤 ${live.title}<br><small>📍 ${live.venue}</small></div>`;
     });
