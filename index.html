@@ -23,18 +23,24 @@
     .last-played { display: block; font-size: 0.8em; color: #888; margin-left: 35px; }
     .song-title { color: #007bff; text-decoration: underline; cursor: pointer; font-weight: bold; }
     .album-name { font-size: 0.8em; color: #666; margin-left: 5px; }
+    label { font-size: 0.9em; color: #555; font-weight: bold; display: block; margin-bottom: 5px; }
   </style>
 </head>
 <body>
 
-<h1>🎵 PG DB10</h1>
+<h1>🎵 PGDB</h1>
 
 <div id="loader" class="loading">データを読み込み中...</div>
 
 <div id="app-ui" style="display:none;">
-  <label>ライブ履歴を表示：</label>
-  <select id="liveSelect">
-    <option value="">-- ライブを選択 --</option>
+  <label>1. ツアー・ライブ名を選択：</label>
+  <select id="tourSelect">
+    <option value="">-- ツアーを選択 --</option>
+  </select>
+
+  <label>2. 公演日を選択：</label>
+  <select id="liveSelect" disabled>
+    <option value="">-- 先にツアーを選択 --</option>
   </select>
 
   <button onclick="showGlobalStats()" class="secondary-btn">📊 全演奏曲ランキングを表示</button>
@@ -53,15 +59,10 @@
 
   async function init() {
     try {
-      console.log("Fetching data...");
       const fetchJson = async (file) => {
         const res = await fetch(file);
         if (!res.ok) throw new Error(`${file} が見つかりません`);
-        try {
-          return await res.json();
-        } catch (e) {
-          throw new Error(`${file} の中身（書き方）にエラーがあります`);
-        }
+        return await res.json();
       };
 
       const [resLives, resSets, resSongs] = await Promise.all([
@@ -74,52 +75,92 @@
       setlists = resSets;
       songsMaster = resSongs;
 
-      console.log("Data loaded successfully");
-      renderLiveSelect();
+      renderTourSelect();
       document.getElementById('loader').style.display = 'none';
       document.getElementById('app-ui').style.display = 'block';
     } catch (error) {
       console.error("Load Error:", error);
-      document.getElementById('loader').innerHTML = 
-        `<p style="color:red; font-weight:bold;">データの読み込みに失敗しました</p>
-         <p style="font-size:0.9em; color:#666;">詳細原因: ${error.message}</p>
-         <p style="font-size:0.8em; color:blue;">※GitHubにファイルを正しく保存し、Ctrl+F5で再読み込みしてください</p>`;
+      document.getElementById('loader').innerHTML = `<p style="color:red;">読み込み失敗: ${error.message}</p>`;
     }
   }
 
+  // ツアー選択肢を生成（日付の降順）
+  function renderTourSelect() {
+    const tourSelect = document.getElementById('tourSelect');
+    
+    // ツアーごとに最新の日付を記録
+    const tourMap = new Map();
+    lives.forEach(live => {
+      if (!tourMap.has(live.title) || new Date(live.date) > new Date(tourMap.get(live.title))) {
+        tourMap.set(live.title, live.date);
+      }
+    });
 
+    // 最新日付が新しい順にツアータイトルをソート
+    const sortedTours = Array.from(tourMap.keys()).sort((a, b) => {
+      return new Date(tourMap.get(b)) - new Date(tourMap.get(a));
+    });
 
-  function renderLiveSelect() {
-    const select = document.getElementById('liveSelect');
-    const sortedLives = [...lives].sort((a, b) => new Date(b.date) - new Date(a.date));
-    sortedLives.forEach(live => {
+    sortedTours.forEach(title => {
+      const opt = document.createElement('option');
+      opt.value = title;
+      opt.textContent = title;
+      tourSelect.appendChild(opt);
+    });
+
+    // ツアーが選ばれたら公演日リストを更新
+    tourSelect.addEventListener('change', (e) => {
+      renderLiveSelect(e.target.value);
+    });
+  }
+
+  // 公演日選択肢を生成（日付の降順）
+  function renderLiveSelect(selectedTitle) {
+    const liveSelect = document.getElementById('liveSelect');
+    liveSelect.innerHTML = '<option value="">-- 公演日を選択 --</option>';
+    
+    if (!selectedTitle) {
+      liveSelect.disabled = true;
+      return;
+    }
+
+    const filteredLives = lives
+      .filter(l => l.title === selectedTitle)
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    filteredLives.forEach(live => {
       const opt = document.createElement('option');
       opt.value = live.id;
-      opt.textContent = `${live.date} ${live.title}`;
-      select.appendChild(opt);
+      opt.textContent = `${live.date} 【${live.venue}】`;
+      liveSelect.appendChild(opt);
     });
-    select.addEventListener('change', (e) => { if (e.target.value) showSetlist(e.target.value); });
+
+    liveSelect.disabled = false;
+    liveSelect.onchange = (e) => { if (e.target.value) showSetlist(e.target.value); };
   }
 
   function showSetlist(liveId) {
-    const live = lives.find(l => l.id === liveId);
-    const filteredSet = setlists.filter(s => s.live_id === liveId).sort((a, b) => a.order - b.order);
+    const targetLiveId = String(liveId).padStart(4, '0');
+    const live = lives.find(l => String(l.id).padStart(4, '0') === targetLiveId);
+    const filteredSet = setlists.filter(s => String(s.live_id).padStart(4, '0') === targetLiveId).sort((a, b) => a.order - b.order);
+    
     const area = document.getElementById('displayArea');
     let html = `<h2>${live.title}</h2><p>📅 ${live.date} 📍 ${live.venue}</p><hr><ul>`;
+    if (filteredSet.length === 0) html += `<p>セットリストが登録されていません。</p>`;
     filteredSet.forEach(item => {
       html += `<li>${item.order}. <strong>${item.song_title}</strong>${item.is_encore ? '<span class="encore">(Encore)</span>' : ''}</li>`;
     });
     area.innerHTML = html + `</ul>`;
   }
 
-// 全演奏ランキング（超強力お掃除版）
+  // 全演奏ランキング
   function showGlobalStats() {
     const counts = {};
     const lastLiveMap = {};
 
     setlists.forEach(s => {
       counts[s.song_id] = (counts[s.song_id] || 0) + 1;
-      const currentLive = lives.find(l => l.id === s.live_id);
+      const currentLive = lives.find(l => String(l.id).padStart(4, '0') === String(s.live_id).padStart(4, '0'));
       if (currentLive) {
         if (!lastLiveMap[s.song_id] || new Date(currentLive.date) > new Date(lastLiveMap[s.song_id].date)) {
           lastLiveMap[s.song_id] = currentLive;
@@ -134,73 +175,53 @@
     let rank = 1;
     sorted.forEach(([songId, count], index) => {
       if (index > 0 && count < sorted[index - 1][1]) rank = index + 1;
-      
       const song = songsMaster.find(sm => String(sm.id).padStart(3, '0') === String(songId).padStart(3, '0'));
-
-      // --- 超強力お掃除ロジック ---
-      let rawTitle = song ? song.title : (setlists.find(s => s.song_id === songId)?.song_title || `ID:${songId}`);
-      
-      let title = rawTitle
-        .replace(/^"/g, "")        // 先頭の " を削除
-        .split('(')[0]             // ( があれば、それより前だけを取り出す
-        .split('（')[0]            // 全角の （ も同様
-        .trim();                   // 前後の空白を削除
-      // --------------------------
+      let title = song ? song.title : (setlists.find(s => s.song_id === songId)?.song_title || `ID:${songId}`);
+      title = title.replace(/^"/g, "").split('(')[0].split('（')[0].trim();
 
       const lastLive = lastLiveMap[songId];
-      
       html += `<li>
                 <span class="rank-num">${rank}位</span>
                 <span class="song-title" onclick="showSongHistory('${songId}', '${title.replace(/'/g, "\\'")}')">${title}</span> (${count}回)
-                ${lastLive ? `<span class="last-played">${lastLive.date} 「${lastLive.title}」</span>` : ''}
+                ${lastLive ? `<span class="last-played">最終演奏: ${lastLive.date} 「${lastLive.title}」</span>` : ''}
               </li>`;
     });
     area.innerHTML = html + `</ul>`;
   }
 
-  // 未演奏の曲一覧（超強力お掃除版）
+  // 未演奏曲一覧
   function showUnplayedSongs() {
     const playedSongIds = new Set(setlists.map(s => String(s.song_id).padStart(3, '0')));
-    
     const unplayed = songsMaster
       .filter(sm => !playedSongIds.has(String(sm.id).padStart(3, '0')))
       .sort((a, b) => (a.title || "").localeCompare(b.title || "", 'ja'));
 
     const area = document.getElementById('displayArea');
     let html = `<h2>🔕 未演奏の曲一覧 (${unplayed.length}曲)</h2><ul>`;
-    
     if (unplayed.length === 0) {
       html += `<p>すべての曲が演奏済みです！</p>`;
     } else {
       unplayed.forEach(song => {
-        // --- 超強力お掃除ロジック ---
-        let title = (song.title || "名称不明")
-          .replace(/^"/g, "")
-          .split('(')[0]
-          .split('（')[0]
-          .trim();
-        
-        // songs_master.jsonに合わせて小文字の .album を参照
-        const albumName = song.album || 'アルバム不明';
-        html += `<li>・${title} <span class="album-name">(${albumName})</span></li>`;
+        let title = (song.title || "名称不明").replace(/^"/g, "").split('(')[0].split('（')[0].trim();
+        html += `<li>・${title} <span class="album-name">(${song.album || '不明'})</span></li>`;
       });
     }
     area.innerHTML = html + `</ul>`;
   }
 
- 
-    function showSongHistory(songId, songTitle) {
+  // 楽曲演奏履歴
+  function showSongHistory(songId, songTitle) {
     const history = setlists.filter(s => String(s.song_id).padStart(3, '0') === String(songId).padStart(3, '0'));
     const area = document.getElementById('displayArea');
     let html = `<h3>🎸 「${songTitle}」の演奏履歴</h3>`;
     html += `<button onclick="showGlobalStats()" class="secondary-btn" style="width:auto; padding:5px 15px;">← ランキングに戻る</button><br><br>`;
     
     history.sort((a,b) => {
-      const liveA = lives.find(l => l.id === a.live_id);
-      const liveB = lives.find(l => l.id === b.live_id);
+      const liveA = lives.find(l => String(l.id).padStart(4, '0') === String(a.live_id).padStart(4, '0'));
+      const liveB = lives.find(l => String(l.id).padStart(4, '0') === String(b.live_id).padStart(4, '0'));
       return new Date(liveB.date) - new Date(liveA.date);
     }).forEach(h => {
-      const live = lives.find(l => l.id === h.live_id);
+      const live = lives.find(l => String(l.id).padStart(4, '0') === String(h.live_id).padStart(4, '0'));
       if (live) {
         html += `<div class="live-card"><b>📅 ${live.date}</b><br>🎤 ${live.title}<br><small>📍 ${live.venue}</small></div>`;
       }
@@ -208,76 +229,37 @@
     area.innerHTML = html;
   }
 
-  // 3. 都道府県ランキング表示
+  // 都道府県別
   function showPrefStats() {
     const counts = {};
-
     lives.forEach(live => {
       const pref = live.prefecture || "不明";
       counts[pref] = (counts[pref] || 0) + 1;
     });
-
     const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
     const area = document.getElementById('displayArea');
-    
     let html = `<h2>🗾 都道府県別 開催ランキング</h2><ul>`;
-    
     let rank = 1;
     sorted.forEach(([pref, count], index) => {
       if (index > 0 && count < sorted[index - 1][1]) rank = index + 1;
-      
-      html += `
-        <li onclick="showPrefHistory('${pref}')" style="cursor:pointer; color:#007bff; text-decoration:underline;">
-          <span class="rank-num">${rank}位</span>
-          <strong>${pref}</strong> (${count}回)
-        </li>`;
+      html += `<li onclick="showPrefHistory('${pref}')" style="cursor:pointer; color:#007bff; text-decoration:underline;">
+                <span class="rank-num">${rank}位</span><strong>${pref}</strong> (${count}回)</li>`;
     });
-    
     area.innerHTML = html + `</ul>`;
   }
 
-  // 都道府県ごとの開催履歴表示
   function showPrefHistory(prefName) {
-    const history = lives.filter(l => l.prefecture === prefName)
-                         .sort((a, b) => new Date(b.date) - new Date(a.date));
-    
+    const history = lives.filter(l => l.prefecture === prefName).sort((a, b) => new Date(b.date) - new Date(a.date));
     const area = document.getElementById('displayArea');
     let html = `<h3>📍 ${prefName} での開催履歴</h3>`;
     html += `<button onclick="showPrefStats()" class="secondary-btn" style="width:auto; padding:5px 15px;">← ランキングに戻る</button><br><br>`;
-    
     history.forEach(live => {
-      html += `
-        <div class="live-card">
-          <b>📅 ${live.date}</b><br>
-          🎤 ${live.title}<br>
-          <small>📍 ${live.venue}</small>
-        </div>`;
+      html += `<div class="live-card"><b>📅 ${live.date}</b><br>🎤 ${live.title}<br><small>📍 ${live.venue}</small></div>`;
     });
     area.innerHTML = html;
   }
-
-  // 既存の showSetlist もID比較を安全に修正
-  function showSetlist(liveId) {
-    // 4桁に揃えて比較
-    const targetLiveId = String(liveId).padStart(4, '0');
-    const live = lives.find(l => String(l.id).padStart(4, '0') === targetLiveId);
-    const filteredSet = setlists.filter(s => String(s.live_id).padStart(4, '0') === targetLiveId).sort((a, b) => a.order - b.order);
-    
-    const area = document.getElementById('displayArea');
-    let html = `<h2>${live.title}</h2><p>📅 ${live.date} 📍 ${live.venue}</p><hr><ul>`;
-    filteredSet.forEach(item => {
-      html += `<li>${item.order}. <strong>${item.song_title}</strong>${item.is_encore ? '<span class="encore">(Encore)</span>' : ''}</li>`;
-    });
-    area.innerHTML = html + `</ul>`;
-  }
-
 
   init();
 </script>
 </body>
 </html>
-
-
-
-
-
