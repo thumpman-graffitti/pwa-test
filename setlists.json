@@ -223,7 +223,7 @@
   { "live_id": "0014", "song_id": "004", "song_title": "ジレンマ", "order": 16, "is_encore": false },
   { "live_id": "0014", "song_id": "025", "song_title": "サボテン", "order": 17, "is_encore": true },
   { "live_id": "0014", "song_id": "003", "song_title": "ヒトリノ夜", "order": 18, "is_encore": true },
-  { "live_id": "0014", "song_id": "013", "song_title": "ミュージック・アワー", "order": 19, "is_encore": true }
+  { "live_id": "0014", "song_id": "013", "song_title": "ミュージック・アワー", "order": 19, "is_encore": true },
   { "live_id": "0015", "song_id": "009", "song_title": "Heart Beat", "order": 1, "is_encore": false },
   { "live_id": "0015", "song_id": "010", "song_title": "マシンガントーク", "order": 2, "is_encore": false },
   { "live_id": "0015", "song_id": "015", "song_title": "PRIME", "order": 3, "is_encore": false },
