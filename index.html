@@ -32,7 +32,7 @@
 </head>
 <body>
 
-<h1>🎵 PGDB2</h1>
+<h1>🎵 PGDB3</h1>
 
 <div id="loader" class="loading">データを読み込み中...</div>
 
@@ -191,38 +191,64 @@
 
   // --- 都道府県マップ表示機能 ---
   function showPrefStats() {
+    const area = document.getElementById('displayArea');
+    
+    // 1. 都道府県データの集計とクレンジング
     const counts = {};
     lives.forEach(live => {
-      const pref = live.prefecture || "不明";
+      let pref = (live.prefecture || "不明").trim();
+      // 「都・道・府・県」が抜けている場合を補完する（JapanMapの仕様合わせ）
+      if (pref !== "不明" && !pref.endsWith("都") && !pref.endsWith("道") && !pref.endsWith("府") && !pref.endsWith("県")) {
+          if (pref === "東京") pref = "東京都";
+          else if (pref === "大阪" || pref === "京都") pref += "府";
+          else if (pref === "北海道") pref = "北海道";
+          else pref += "県";
+      }
       counts[pref] = (counts[pref] || 0) + 1;
     });
 
-    const area = document.getElementById('displayArea');
-    area.innerHTML = `<h2>🗾 都道府県別ライブマップ</h2><div id="map-canvas"><div id="jmap"></div></div><div id="prefList"></div>`;
+    // 2. 表示エリアの初期化
+    area.innerHTML = `
+      <h2>🗾 都道府県別ライブマップ</h2>
+      <div id="map-canvas" style="min-height:300px; display:flex; justify-content:center; align-items:center; background:#fff; border-radius:8px;">
+        <div id="jmap"></div>
+      </div>
+      <div id="prefList"></div>
+    `;
 
-    // マップ表示設定
-    const maxCount = Math.max(...Object.values(counts));
-    const prefList = ["北海道","青森県","岩手県","宮城県","秋田県","山形県","福島県","茨城県","栃木県","群馬県","埼玉県","千葉県","東京都","神奈川県","新潟県","富山県","石川県","福井県","山梨県","長野県","岐阜県","静岡県","愛知県","三重県","滋賀県","京都府","大阪府","兵庫県","奈良県","和歌山県","鳥取県","島根県","岡山県","広島県","山口県","徳島県","香川県","愛媛県","高知県","福岡県","佐賀県","長崎県","熊本県","大分県","宮崎県","鹿児島県","沖縄県"];
+    // 3. マップの描画（try-catchでエラーを捕捉）
+    try {
+      const maxCount = Math.max(...Object.values(counts), 1);
+      const prefList = ["北海道","青森県","岩手県","宮城県","秋田県","山形県","福島県","茨城県","栃木県","群馬県","埼玉県","千葉県","東京都","神奈川県","新潟県","富山県","石川県","福井県","山梨県","長野県","岐阜県","静岡県","愛知県","三重県","滋賀県","京都府","大阪府","兵庫県","奈良県","和歌山県","鳥取県","島根県","岡山県","広島県","山口県","徳島県","香川県","愛媛県","高知県","福岡県","佐賀県","長崎県","熊本県","大分県","宮崎県","鹿児島県","沖縄県"];
 
-    $("#jmap").japanMap({
-      width: 500,
-      selection: "prefecture",
-      areas: prefList.map((name, index) => {
-        const count = counts[name] || 0;
-        const alpha = count > 0 ? (count / maxCount) * 0.8 + 0.2 : 0; // 0回は透明、1回以上は濃淡
-        return {
-          code: index + 1,
-          name: name,
-          color: count > 0 ? `rgba(0, 123, 255, ${alpha})` : "#eeeeee",
-          hoverColor: "#ffc107"
-        };
-      }),
-      onSelect: function(data) {
-        showPrefHistory(data.name);
+      // jQueryが読み込まれているか確認
+      if (typeof jQuery === "undefined" || !jQuery.fn.japanMap) {
+          throw new Error("地図ライブラリが読み込まれていません。ページを再読み込みしてください。");
       }
-    });
 
-    // リスト部分の生成
+      $("#jmap").japanMap({
+        width: 500,
+        selection: "prefecture",
+        areas: prefList.map((name, index) => {
+          const count = counts[name] || 0;
+          const alpha = count > 0 ? (count / maxCount) * 0.8 + 0.2 : 0;
+          return {
+            code: index + 1,
+            name: name,
+            color: count > 0 ? `rgba(0, 123, 255, ${alpha})` : "#eeeeee",
+            hoverColor: "#ffc107"
+          };
+        }),
+        onSelect: function(data) {
+          showPrefHistory(data.name);
+        }
+      });
+    } catch (e) {
+      console.error(e);
+      document.getElementById('map-canvas').innerHTML = `<p style="color:red; padding:20px;">地図の表示に失敗しました: ${e.message}</p>`;
+    }
+
+    // 4. ランキングリストの生成
     const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
     let html = `<ul style="margin-top:20px;">`;
     let rank = 1;
@@ -234,15 +260,6 @@
     document.getElementById('prefList').innerHTML = html + `</ul>`;
   }
 
-  function showPrefHistory(prefName) {
-    const history = lives.filter(l => l.prefecture === prefName).sort((a, b) => new Date(b.date) - new Date(a.date));
-    const area = document.getElementById('displayArea');
-    let html = `<h3>📍 ${prefName} での開催履歴</h3><button onclick="showPrefStats()" class="secondary-btn" style="width:auto; padding:5px 15px;">← マップに戻る</button><br><br>`;
-    history.forEach(live => {
-      html += `<div class="live-card"><b>📅 ${live.date}</b><br>🎤 ${live.title}<br><small>📍 ${live.venue}</small></div>`;
-    });
-    area.innerHTML = html;
-  }
 
   init();
 </script>
