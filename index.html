@@ -28,7 +28,7 @@
 </head>
 <body>
 
-<h1>🎵 PGDB</h1>
+<h1>🎵 PGDB2</h1>
 
 <div id="loader" class="loading">データを読み込み中...</div>
 
@@ -125,18 +125,33 @@
     liveSelect.onchange = (e) => { if (e.target.value) showSetlist(e.target.value); };
   }
 
-  function showSetlist(liveId) {
+function showSetlist(liveId) {
     const targetLiveId = String(liveId).padStart(4, '0');
     const live = lives.find(l => String(l.id).padStart(4, '0') === targetLiveId);
+    
+    // セットリストデータを取得して順番通りに並べる
     const filteredSet = setlists.filter(s => String(s.live_id).padStart(4, '0') === targetLiveId).sort((a, b) => a.order - b.order);
+    
     const area = document.getElementById('displayArea');
     let html = `<h2>${live.title}</h2><p>📅 ${live.date} 📍 ${live.venue}</p><hr><ul>`;
-    if (filteredSet.length === 0) html += `<p>セットリストが登録されていません。</p>`;
+    
+    if (filteredSet.length === 0) {
+      html += `<p>セットリストが登録されていません。</p>`;
+    }
+
     filteredSet.forEach(item => {
-      html += `<li>${item.order}. <strong>${item.song_title}</strong>${item.is_encore ? '<span class="encore">(Encore)</span>' : ''}</li>`;
+      // ★ ここが修正ポイント：マスターデータから曲名を取得する
+      const song = songsMaster.find(sm => String(sm.id).padStart(3, '0') === String(item.song_id).padStart(3, '0'));
+      
+      // マスターに登録があればそのタイトルを、なければ(予備として)セットリスト内の曲名を使用
+      const displayTitle = song ? song.title : item.song_title;
+
+      html += `<li>${item.order}. <strong>${displayTitle}</strong>${item.is_encore ? '<span class="encore">(Encore)</span>' : ''}</li>`;
     });
+    
     area.innerHTML = html + `</ul>`;
   }
+  
 
   function showGlobalStats() {
     resetSelectors();
