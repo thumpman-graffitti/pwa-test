@@ -1,11 +1,5 @@
 [
-  {
-    "id": "0001",
-    "title": "東京ロマンスポルノ vol.3 LIVE IN SHIBUYA ON AIR WEST",
-    "date": "1999-12-04",
-    "venue": "渋谷ON AIR WEST",
-    "prefecture": "東京都" 
-  },
+  { "id": "0001","title": "東京ロマンスポルノ vol.3 LIVE IN SHIBUYA ON AIR WEST","date": "1999-12-04", "venue": "渋谷ON AIR WEST",    "prefecture": "東京都"   },
   { "id": "0002", "title": "Tour 08452 〜Welcome to my heart〜", "date": "2000-03-18", "venue": "名古屋ボトムライン", "prefecture": "愛知県" },
   { "id": "0003", "title": "Tour 08452 〜Welcome to my heart〜", "date": "2000-03-24", "venue": "渋谷ON AIR EAST", "prefecture": "東京都" },
   { "id": "0004", "title": "Tour 08452 〜Welcome to my heart〜", "date": "2000-03-26", "venue": "心斎橋クラブクアトロ", "prefecture": "大阪府" },
@@ -17,6 +11,7 @@
   { "id": "0010", "title": "Tour 08452 〜Welcome to my heart〜", "date": "2000-04-05", "venue": "高知キャラバンサライ", "prefecture": "高知県" },
   { "id": "0011", "title": "Tour 08452 〜Welcome to my heart〜", "date": "2000-04-08", "venue": "札幌ペニーレーン24", "prefecture": "北海道" },
   { "id": "0012", "title": "Tour 08452 〜Welcome to my heart〜", "date": "2000-04-10", "venue": "仙台ビーブベースメントシアター", "prefecture": "宮城県" },
-  { "id": "0013", "title": "Tour 08452 〜Welcome to my heart〜", "date": "2000-04-20", "venue": "渋谷ON AIR EAST", "prefecture": "東京都" }
-  
+  { "id": "0013", "title": "Tour 08452 〜Welcome to my heart〜", "date": "2000-04-20", "venue": "渋谷ON AIR EAST", "prefecture": "東京都" },
+  { "id": "0014", "title": "東京ロマンスポルノ vol.4 ”横G”",  "date": "2000-06-17",  "venue": "渋谷公会堂",  "prefecture": "東京都"}
+
 ]
