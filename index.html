@@ -7,8 +7,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="PG Live Log" />
   <title>PG Live Log</title>
-  <script src="https://unpkg.com/jquery@3.6.0/dist/jquery.min.js"></script>
-  <script src="https://unpkg.com/japanmap@1.0.2/jquery.japanmap.min.js"></script>
   <style>
     body { font-family: sans-serif; padding: 20px; line-height: 1.6; max-width: 800px; margin: auto; }
     input, select, button { display: block; width: 100%; margin-bottom: 10px; padding: 12px; box-sizing: border-box; border-radius: 5px; border: 1px solid #ccc; font-size: 16px; }
@@ -26,13 +24,13 @@
     .song-title { color: #007bff; text-decoration: underline; cursor: pointer; font-weight: bold; }
     .album-name { font-size: 0.8em; color: #666; margin-left: 5px; }
     label { font-size: 0.9em; color: #555; font-weight: bold; display: block; margin-bottom: 5px; }
-    /* 地図用のスタイル */
-    #map-canvas { background: white; border-radius: 8px; margin-bottom: 20px; padding: 10px; display: flex; justify-content: center; }
+    /* 地図タイル用 */
+    .map-tile:hover { opacity: 0.8; stroke: #ffc107; stroke-width: 2px; }
   </style>
 </head>
 <body>
 
-<h1>🎵 PGDB9</h1>
+<h1>🎵 PGDB10</h1>
 
 <div id="loader" class="loading">データを読み込み中...</div>
 
@@ -88,6 +86,14 @@
     }
   }
 
+  // セレクターを初期状態に戻す
+  function resetSelectors() {
+    document.getElementById('tourSelect').value = "";
+    const liveSelect = document.getElementById('liveSelect');
+    liveSelect.innerHTML = '<option value="">-- 先にツアーを選択 --</option>';
+    liveSelect.disabled = true;
+  }
+
   function renderTourSelect() {
     const tourSelect = document.getElementById('tourSelect');
     const tourMap = new Map();
@@ -135,6 +141,7 @@
   }
 
   function showGlobalStats() {
+    resetSelectors();
     const counts = {};
     const lastLiveMap = {};
     setlists.forEach(s => {
@@ -162,6 +169,7 @@
   }
 
   function showUnplayedSongs() {
+    resetSelectors();
     const playedSongIds = new Set(setlists.map(s => String(s.song_id).padStart(3, '0')));
     const unplayed = songsMaster.filter(sm => !playedSongIds.has(String(sm.id).padStart(3, '0'))).sort((a, b) => (a.title || "").localeCompare(b.title || "", 'ja'));
     const area = document.getElementById('displayArea');
@@ -189,18 +197,15 @@
     area.innerHTML = html;
   }
 
-  // --- 都道府県マップ表示機能 ---
+  // --- 都道府県ランキング & タイルマップ ---
 
-
-  // 都道府県別ランキングを表示する関数
   function showPrefStats() {
+    resetSelectors();
     const area = document.getElementById('displayArea');
     
-    // 1. 都道府県データの集計
     const counts = {};
     lives.forEach(live => {
       let pref = (live.prefecture || "不明").trim();
-      // 「広島」を「広島県」に統一するなどのクレンジング
       if (pref !== "不明" && !pref.endsWith("都") && !pref.endsWith("道") && !pref.endsWith("府") && !pref.endsWith("県")) {
           if (pref === "東京") pref = "東京都";
           else if (pref === "大阪" || pref === "京都") pref += "府";
@@ -210,80 +215,75 @@
       counts[pref] = (counts[pref] || 0) + 1;
     });
 
-    // 2. 降順（回数が多い順）に並べ替え
-    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    const maxCount = Math.max(...Object.values(counts), 1);
 
-    // 3. HTMLの生成
-    let html = `<h2>🗾 都道府県別 開催ランキング</h2>`;
-    html += `<p style="font-size: 0.9em; color: #666; margin-bottom: 15px;">※都道府県名をタップすると履歴を表示します</p>`;
-    html += `<ul style="padding: 0;">`;
+    // タイルマップ定義
+    const prefTiles = [
+      { name: "北海道", x: 400, y: 0 },
+      { name: "青森県", x: 400, y: 70 }, { name: "岩手県", x: 400, y: 115 }, { name: "秋田県", x: 350, y: 115 },
+      { name: "宮城県", x: 400, y: 160 }, { name: "山形県", x: 350, y: 160 }, { name: "福島県", x: 400, y: 205 },
+      { name: "茨城県", x: 400, y: 250 }, { name: "栃木県", x: 350, y: 250 }, { name: "群馬県", x: 300, y: 250 },
+      { name: "埼玉県", x: 300, y: 295 }, { name: "千葉県", x: 400, y: 295 }, { name: "東京都", x: 350, y: 295 }, { name: "神奈川県", x: 350, y: 340 },
+      { name: "新潟県", x: 300, y: 205 }, { name: "富山県", x: 250, y: 205 }, { name: "石川県", x: 200, y: 205 }, { name: "福井県", x: 150, y: 205 },
+      { name: "山梨県", x: 250, y: 295 }, { name: "長野県", x: 250, y: 250 }, { name: "岐阜県", x: 200, y: 250 }, { name: "静岡県", x: 300, y: 340 }, { name: "愛知県", x: 250, y: 340 },
+      { name: "三重県", x: 200, y: 340 }, { name: "滋賀県", x: 150, y: 250 }, { name: "京都府", x: 100, y: 250 }, { name: "大阪府", x: 100, y: 295 }, { name: "兵庫県", x: 50, y: 250 }, { name: "奈良県", x: 150, y: 295 }, { name: "和歌山県", x: 150, y: 340 },
+      { name: "鳥取県", x: 50, y: 205 }, { name: "島根県", x: 0, y: 205 }, { name: "岡山県", x: 50, y: 295 }, { name: "広島県", x: 0, y: 295 }, { name: "山口県", x: 0, y: 340 },
+      { name: "徳島県", x: 100, y: 410 }, { name: "香川県", x: 50, y: 410 }, { name: "愛媛県", x: 0, y: 410 }, { name: "高知県", x: 50, y: 455 },
+      { name: "福岡県", x: 0, y: 480 }, { name: "佐賀県", x: 0, y: 525 }, { name: "長崎県", x: 0, y: 570 }, { name: "熊本県", x: 50, y: 525 }, { name: "大分県", x: 50, y: 480 }, { name: "宮崎県", x: 50, y: 570 }, { name: "鹿児島県", x: 0, y: 615 }, { name: "沖縄県", x: 150, y: 615 }
+    ];
+
+    let mapSvg = `<svg viewBox="-10 -10 480 680" style="width:100%; height:auto;">`;
+    prefTiles.forEach(p => {
+      const count = counts[p.name] || 0;
+      const alpha = count > 0 ? (count / maxCount) * 0.7 + 0.3 : 0.05;
+      const color = count > 0 ? `rgba(0, 123, 255, ${alpha})` : "#f0f0f0";
+      const shortName = p.name.replace(/県|府|東京都/, "");
+      mapSvg += `
+        <g onclick="showPrefHistory('${p.name}')" style="cursor:pointer" class="map-tile">
+          <rect x="${p.x}" y="${p.y}" width="42" height="42" rx="4" fill="${color}" stroke="#ddd" stroke-width="1" />
+          <text x="${p.x + 21}" y="${p.y + 26}" fill="${count > (maxCount/2) ? 'white' : '#333'}" font-size="10" text-anchor="middle" pointer-events="none">${shortName}</text>
+        </g>`;
+    });
+    mapSvg += `</svg>`;
+
+    let html = `<h2>🗾 都道府県別ライブマップ</h2>`;
+    html += `<div style="background:#fff; padding:10px; border-radius:8px; margin-bottom:20px; box-shadow:inset 0 0 10px rgba(0,0,0,0.05);">${mapSvg}</div>`;
+    html += `<hr><h3>📊 開催回数ランキング</h3><ul style="padding:0;">`;
     
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
     let rank = 1;
     sorted.forEach(([pref, count], index) => {
-      // 同率順位の計算
       if (index > 0 && count < sorted[index - 1][1]) rank = index + 1;
-      
-      // タップしやすいように大きめのボタン風リストにする
       html += `
         <li onclick="showPrefHistory('${pref}')" 
-            style="cursor:pointer; 
-                   list-style:none; 
-                   padding: 15px; 
-                   background:#fff; 
-                   margin-bottom:8px; 
-                   border-radius:8px; 
-                   border:1px solid #ddd; 
-                   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-                   display:flex; 
-                   justify-content:space-between; 
-                   align-items:center;">
-          <div>
-            <span class="rank-num" style="width: 45px; display: inline-block;">${rank}位</span>
-            <span style="color:#007bff; font-weight:bold; font-size: 1.1em; text-decoration:underline;">${pref}</span>
-          </div>
-          <div style="font-weight:bold; color: #555;">${count}回 〉</div>
+            style="cursor:pointer; list-style:none; padding:15px; background:#fff; margin-bottom:8px; border-radius:8px; border:1px solid #ddd; display:flex; justify-content:space-between; align-items:center;">
+          <div><span class="rank-num">${rank}位</span> <span style="color:#007bff; font-weight:bold; text-decoration:underline;">${pref}</span></div>
+          <div style="font-weight:bold;">${count}回 〉</div>
         </li>`;
     });
     
     area.innerHTML = html + `</ul>`;
   }
 
-  // 特定の都道府県の履歴を表示する関数
   function showPrefHistory(prefName) {
-    // データのクレンジング（念のため履歴表示時も整合性をとる）
     const history = lives.filter(l => {
-      let p = (l.prefecture || "不明").trim();
-      if (p !== "不明" && !p.endsWith("都") && !p.endsWith("道") && !p.endsWith("府") && !p.endsWith("県")) {
-          if (p === "東京") p = "東京都";
-          else if (p === "大阪" || p === "京都") p += "府";
-          else if (p === "北海道") p = "北海道";
-          else p += "県";
+      let p = (l.prefecture || "").trim();
+      if (!p.endsWith("都") && !p.endsWith("道") && !p.endsWith("府") && !p.endsWith("県")) {
+          if (p === "東京") p = "東京都"; else if (p === "大阪" || p === "京都") p += "府"; else if (p === "北海道") p = "北海道"; else if(p) p += "県";
       }
       return p === prefName;
     }).sort((a, b) => new Date(b.date) - new Date(a.date));
 
     const area = document.getElementById('displayArea');
     let html = `<h3>📍 ${prefName} での開催履歴</h3>`;
-    html += `<button onclick="showPrefStats()" class="secondary-btn" style="width:auto; padding:8px 20px; margin-bottom:15px;">← ランキングに戻る</button>`;
+    html += `<button onclick="showPrefStats()" class="secondary-btn" style="width:auto; padding:8px 20px; margin-bottom:15px;">← マップに戻る</button>`;
     
-    if (history.length === 0) {
-      html += `<p>該当するデータがありません。</p>`;
-    } else {
-      history.forEach(live => {
-        html += `
-          <div class="live-card">
-            <b style="font-size: 1.1em;">📅 ${live.date}</b><br>
-            <span style="color: #333;">🎤 ${live.title}</span><br>
-            <small style="color: #666;">📍 ${live.venue}</small>
-          </div>`;
-      });
-    }
+    history.forEach(live => {
+      html += `<div class="live-card"><b>📅 ${live.date}</b><br>🎤 ${live.title}<br><small>📍 ${live.venue}</small></div>`;
+    });
     area.innerHTML = html;
-    // 画面上部へスクロール
     window.scrollTo(0, 0);
   }
-
-
 
   init();
 </script>
