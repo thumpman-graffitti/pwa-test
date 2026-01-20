@@ -12,6 +12,23 @@
   { "id": "0011", "title": "Tour 08452 〜Welcome to my heart〜", "date": "2000-04-08", "venue": "札幌ペニーレーン24", "prefecture": "北海道" },
   { "id": "0012", "title": "Tour 08452 〜Welcome to my heart〜", "date": "2000-04-10", "venue": "仙台ビーブベースメントシアター", "prefecture": "宮城県" },
   { "id": "0013", "title": "Tour 08452 〜Welcome to my heart〜", "date": "2000-04-20", "venue": "渋谷ON AIR EAST", "prefecture": "東京都" },
-  { "id": "0014", "title": "東京ロマンスポルノ vol.4 ”横G”",  "date": "2000-06-17",  "venue": "渋谷公会堂",  "prefecture": "東京都"}
-
+  { "id": "0014", "title": "東京ロマンスポルノ vol.4 ”横G”",  "date": "2000-06-17",  "venue": "渋谷公会堂",  "prefecture": "東京都"},
+  {"id": "0015",    "title": "2ndライヴサーキット ”D4-33-4”",    "date": "2000-09-24",    "venue": "松山市民会館",    "prefecture": "愛媛県"  },
+  {    "id": "0016",    "title": "2ndライヴサーキット ”D4-33-4”",    "date": "2000-09-25",    "venue": "広島アステールプラザ",    "prefecture": "広島県"  },
+  {    "id": "0017",    "title": "2ndライヴサーキット ”D4-33-4”",    "date": "2000-09-28",    "venue": "鹿児島県文化センター",    "prefecture": "鹿児島県"  },
+  {    "id": "0018",    "title": "2ndライヴサーキット ”D4-33-4”",    "date": "2000-10-03",    "venue": "名古屋E.L.L（SPECIAL LIVE HOUSE公演）",    "prefecture": "愛知県"  },
+  {    "id": "0019",    "title": "2ndライヴサーキット ”D4-33-4”",    "date": "2000-10-04",    "venue": "静岡市民文化会館",    "prefecture": "静岡県"  },
+  {    "id": "0020",    "title": "2ndライヴサーキット ”D4-33-4”",    "date": "2000-10-07",    "venue": "Zepp Sendai",    "prefecture": "宮城県"  },
+  {    "id": "0021",    "title": "2ndライヴサーキット ”D4-33-4”",    "date": "2000-10-10",    "venue": "金沢市文化ホール",    "prefecture": "石川県"  },
+  {    "id": "0022",    "title": "2ndライヴサーキット ”D4-33-4”",    "date": "2000-10-11",    "venue": "新潟フェイズ",    "prefecture": "新潟県"  },
+  {    "id": "0023",    "title": "2ndライヴサーキット ”D4-33-4”",    "date": "2000-10-15",    "venue": "Zepp Fukuoka",    "prefecture": "福岡県"  },
+  {    "id": "0024",    "title": "2ndライヴサーキット ”D4-33-4”",    "date": "2000-10-18",    "venue": "札幌ファクトリーホール",    "prefecture": "北海道" },
+  {    "id": "0025",    "title": "2ndライヴサーキット ”D4-33-4”",    "date": "2000-10-20",    "venue": "大阪厚生年金会館",    "prefecture": "大阪府"  },
+  {    "id": "0026",    "title": "2ndライヴサーキット ”D4-33-4”",    "date": "2000-10-22",    "venue": "名古屋市公会堂",    "prefecture": "愛知県"  },
+  {    "id": "0027",    "title": "2ndライヴサーキット ”D4-33-4”",    "date": "2000-10-24",    "venue": "渋谷公会堂",    "prefecture": "東京都"  },
+  {    "id": "0028",    "title": "2ndライヴサーキット ”D4-33-4”",    "date": "2000-10-25",    "venue": "渋谷公会堂",    "prefecture": "東京都"  }
 ]
+
+  
+]
+
