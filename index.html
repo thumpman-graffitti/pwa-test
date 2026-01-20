@@ -32,7 +32,7 @@
 </head>
 <body>
 
-<h1>🎵 PGDB5</h1>
+<h1>🎵 PGDB6</h1>
 
 <div id="loader" class="loading">データを読み込み中...</div>
 
@@ -190,7 +190,6 @@
   }
 
   // --- 都道府県マップ表示機能 ---
-
   function showPrefStats() {
     const area = document.getElementById('displayArea');
     
@@ -207,45 +206,49 @@
       counts[pref] = (counts[pref] || 0) + 1;
     });
 
-    // 2. 表示エリアの作成（高さをしっかり確保し、背景を白に）
+    // 2. 表示エリアの作成（高さをしっかり確保）
     area.innerHTML = `
       <h2>🗾 都道府県別ライブマップ</h2>
-      <div id="map-canvas" style="width:100%; min-height:400px; margin:20px 0; background:#fff; display:flex; justify-content:center; align-items:center; border-radius:8px; border:1px solid #eee;">
-        <div id="jmap" style="width:100%; max-width:600px;"></div>
+      <div id="map-canvas" style="width:100%; min-height:400px; margin:20px 0; background:#fff; display:flex; justify-content:center; align-items:center; border:1px solid #eee; border-radius:8px;">
+        <div id="jmap"></div>
       </div>
       <div id="prefList"></div>
     `;
 
-    // 3. 地図描画ロジック
-    setTimeout(() => {
-      try {
-        if (typeof jQuery !== "undefined" && jQuery.fn.japanMap) {
-          const maxCount = Math.max(...Object.values(counts), 1);
-          const prefList = ["北海道","青森県","岩手県","宮城県","秋田県","山形県","福島県","茨城県","栃木県","群馬県","埼玉県","千葉県","東京都","神奈川県","新潟県","富山県","石川県","福井県","山梨県","長野県","岐阜県","静岡県","愛知県","三重県","滋賀県","京都府","大阪府","兵庫県","奈良県","和歌山県","鳥取県","島根県","岡山県","広島県","山口県","徳島県","香川県","愛媛県","高知県","福岡県","佐賀県","長崎県","熊本県","大分県","宮崎県","鹿児島県","沖縄県"];
+    // 3. 地図描画ロジック（描画の「空振り」を防ぐための2段階待ち）
+    const attemptMapRender = () => {
+      const target = document.getElementById('jmap');
+      if (target && typeof jQuery !== "undefined" && jQuery.fn.japanMap) {
+        const maxCount = Math.max(...Object.values(counts), 1);
+        const prefList = ["北海道","青森県","岩手県","宮城県","秋田県","山形県","福島県","茨城県","栃木県","群馬県","埼玉県","千葉県","東京都","神奈川県","新潟県","富山県","石川県","福井県","山梨県","長野県","岐阜県","静岡県","愛知県","三重県","滋賀県","京都府","大阪府","兵庫県","奈良県","和歌山県","鳥取県","島根県","岡山県","広島県","山口県","徳島県","香川県","愛媛県","高知県","福岡県","佐賀県","長崎県","熊本県","大分県","宮崎県","鹿児島県","沖縄県"];
 
-          // 一旦中身を空にしてから描画
-          $("#jmap").empty().japanMap({
-            width: $("#map-canvas").width() > 500 ? 500 : $("#map-canvas").width() - 20,
-            selection: "prefecture",
-            areas: prefList.map((name, index) => {
-              const count = counts[name] || 0;
-              const alpha = count > 0 ? (count / maxCount) * 0.8 + 0.2 : 0;
-              return {
-                code: index + 1,
-                name: name,
-                color: count > 0 ? `rgba(0, 123, 255, ${alpha})` : "#eeeeee",
-                hoverColor: "#ffc107"
-              };
-            }),
-            onSelect: function(data) {
-              showPrefHistory(data.name);
-            }
-          });
-        }
-      } catch (err) {
-        console.error("Map Error:", err);
+        $(target).empty().japanMap({
+          width: 500,
+          selection: "prefecture",
+          areas: prefList.map((name, index) => {
+            const count = counts[name] || 0;
+            const alpha = count > 0 ? (count / maxCount) * 0.8 + 0.2 : 0;
+            return {
+              code: index + 1,
+              name: name,
+              color: count > 0 ? `rgba(0, 123, 255, ${alpha})` : "#eeeeee",
+              hoverColor: "#ffc107"
+            };
+          }),
+          onSelect: function(data) {
+            showPrefHistory(data.name);
+          }
+        });
+      } else {
+        // まだ要素の準備ができていなければ少し待って再試行
+        setTimeout(attemptMapRender, 100);
       }
-    }, 100); // 0.1秒だけ待ってから描画（HTMLの生成を待つ）
+    };
+
+    // 画面の更新（レンダリング）が走るのを待ってから開始
+    requestAnimationFrame(() => {
+      setTimeout(attemptMapRender, 50);
+    });
 
     // 4. ランキングリスト表示
     const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
@@ -258,6 +261,7 @@
     });
     document.getElementById('prefList').innerHTML = html + `</ul>`;
   }
+
 
 
   init();
